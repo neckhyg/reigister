@@ -1,0 +1,430 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+<link rel="stylesheet" type="text/css" href="../tongji/css/extremecomponents.css">
+<link href="../tongji/css/yanzhao.css" rel="stylesheet" type="text/css">
+<link type="text/css" rel="stylesheet" href="../tongji/css/kuangjia.css"/>
+<link type="text/css" rel="stylesheet" href="/css/jquery.ui.all.css" />
+<link href="../tongji/css/jquery.validate.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../tongji/js/jquery.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.validate.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.validate.messages_cn.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.ui.all.js"></script>
+
+
+
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>查看博士报名信息</title>
+<meta http-equiv=Content-Type content="text/html; charset=utf-8"></meta>
+<link href="../tongji/css/style1216.css" rel="stylesheet" type="text/css"></link>
+<script type="text/javascript">
+function printData() {
+	window.location.href='printDoctorExamineApplyFile.do';
+}
+
+function printZkz(ksbh) {
+	window.location.href='printDrZkz.do';
+}
+
+function edit() {
+	window.location.href='editDoctorExamineApply.do';
+}
+
+function refer() {
+	if(confirm('提交后将不能修改，确定提交吗？')){
+		window.location.href='referDoctorExamineApply.do';
+	}
+}
+
+function displayChange() {
+	var status=document.getElementById('mydiv').style.display;
+	if(status=="none"){
+		document.getElementById('mydiv').style.display="";
+	}else{
+		document.getElementById('mydiv').style.display="none";
+	}
+}
+
+function displayYjclChange() {
+	var status=document.getElementById('yjcldiv').style.display;
+	if(status=="none"){
+		document.getElementById('yjcldiv').style.display="";
+	}else{
+		document.getElementById('yjcldiv').style.display="none";
+	}
+}
+
+function displayWjclChange() {
+	var status=document.getElementById('wjcldiv').style.display;
+	if(status=="none"){
+		document.getElementById('wjcldiv').style.display="";
+	}else{
+		document.getElementById('wjcldiv').style.display="none";
+	}
+}
+
+/**
+ * 已经录取为博士的考生，修改个人信息（邮寄地址、是否自取等）
+ */
+function editAdmit(id) {
+	window.location.href='DoctorRecruitSignUp2Controller.do?Action=showUpdateAdmitDoctorInfo&Id='+id;
+}
+
+//首信易支付报名费 
+function payRegistrationFee(){
+	window.location.href='paymentOpen.do';
+}
+
+function pay(){
+	window.location.href='paymentOpen.do';
+}
+
+$(document).ready(function(){
+	$("#applyUnlockForm").validate({
+		rules: {
+			"applyUnlockReason":{required: true}
+		},
+		messages: {
+		}
+	});
+});
+
+</script>
+</head>
+<body>
+	<div class="main">
+	<div class="mainbox">
+		
+			<input id="Suibmit" onclick="edit()" type="button" value="编辑"/>
+		
+		
+
+		
+			
+		<!-- 申请解锁 -->
+		
+			
+			
+		
+		
+		
+		<!-- 东华大学 排考场之前便可以打印准考证 20130107  start -->
+			
+		<!-- 东华大学 排考场之前便可以打印准考证 20130107  end -->
+		<table cellpadding="0" cellspacing="0" border="0" width="95%" class="box_table" align="center">
+			<tr>
+				<td colspan="5" align="center">以下信息必须完整填写，如果填写信息与真实信息有误会直接影响到考生本人的报考或录取</td>
+			</tr>
+
+			
+
+			
+			<tr class="trbg01">
+				<td colspan="5">
+					网报信息审核状态：<br />
+					
+						
+						
+					
+						
+						
+						
+				</td>
+			</tr>
+			
+			
+			
+			
+			<tr>
+				<th colspan="5" class="tdleft" height="28"><font size="3">考生基本信息</font></th>
+			</tr>
+			<tr class="trbg01">
+				<td width="15%" class="tdleft">考生姓名：</td>
+				<td width="30%">&nbsp;何英高</td>
+				<td width="15%" class="tdleft">姓名拼音：</td>
+				<td width="30%">&nbsp;heyinggao</td>
+				<td rowspan="7" align="center" valign="middle">
+					
+						<img src="/MISPackWeb/10247/GSOA_DoctorExamineApplyManage/DoctorExamApplyImg/430421197206142537.jpg?temp=0.7514309149588364" width="150" height="200" align="middle" class="img_css"/>
+					
+					
+				</td>
+			</tr>
+			<tr class="trbg01">
+				<td class="tdleft">证件类型：</td>
+				<td>&nbsp;居民身份证</td>
+				<td class="tdleft">证件号码：</td>
+				<td>&nbsp;430421197206142537</td>
+			</tr>
+			<tr class="trbg01">
+				<td class="tdleft">性别：</td>
+				<td>&nbsp;男</td>
+				<td class="tdleft">民族：</td>
+				<td>&nbsp;汉族</td>
+			</tr>
+			<tr class="trbg01">
+				<td class="tdleft">出生日期：</td>
+				<td>&nbsp;19720614</td>
+				<td class="tdleft">现役军人：</td>
+				<td>&nbsp;非军人</td>
+			</tr>
+			<tr class="trbg01">
+				<td class="tdleft">婚否：</td>
+				<td>&nbsp;已婚</td>
+				<td class="tdleft">政治面貌：</td>
+				<td>&nbsp;群众</td>
+			</tr>
+			<tr class="trbg01">
+				<td class="tdleft">出生地：</td>
+				<td>&nbsp;湖南省|衡阳市|衡阳县</td>
+				<td class="tdleft">籍贯：</td>
+				<td>&nbsp;湖南省|衡阳市|衡阳县</td>
+			</tr>
+			<tr class="trbg01">
+				<td class="tdleft">现学习或工作单位：</td>
+				<td >&nbsp;无锡工艺职业技术学院</td>
+				<td class="tdleft">现学习或工作单位性质：</td>
+				<td>&nbsp;高等学校</td>
+			</tr>
+			<tr class="trbg01">
+				<td class="tdleft">外语水平：</td>
+				<td >&nbsp;CET六级</td>
+				<td class="tdleft">外语水平成绩：</td>
+				<td colspan="2">&nbsp;</td>
+			</tr>
+			<tr class="trbg01">
+				<td class="tdleft">外语水平通过时间：</td>
+				<td >&nbsp;1999-10</td>
+				<td class="tdleft">职称或职务：</td>
+				<td colspan="2">&nbsp;</td>
+			</tr>
+			<tr>
+				<th colspan="5" class="tdleft" height="10"></th>
+			</tr>
+			<tr class="trbg01">
+				<td class="tdleft">考生来源：</td>
+				<td >&nbsp;高等教育教师</td>
+				<td class="tdleft">在校生注册学号：</td>
+				<td colspan="2">
+					&nbsp;
+					
+				</td>
+			</tr>
+			<tr class="trbg01">
+				<td class="tdleft">最后学历：</td>
+				<td >&nbsp;硕士研究生</td>
+				<td class="tdleft">最后学位：</td>
+				<td colspan="2">&nbsp;工学硕士学位</td>
+			</tr>
+			<tr class="trbg01">
+				<th colspan="5" class="tdleft" height="28"><font size="3">学士学位学历信息</font></th>
+			</tr>
+			<tr>
+				<td class="tdleft">获学士学位的单位名称：</td>
+				<td>&nbsp;湖南师范大学</td>
+				<td class="tdleft">获学士学位专业名称：</td>
+				<td colspan="2">&nbsp;070101&nbsp;&nbsp;数学与应用数学</td>
+			</tr>
+			<tr>
+				<td class="tdleft">获学士学位年月：</td>
+				<td class="imgmiddle">&nbsp;199507</td>
+				<td class="tdleft">学士学位证书编号：</td>
+				<td colspan="2">
+					&nbsp;000
+					
+				</td>
+			</tr>
+			<tr>
+				<td class="tdleft">本科毕业单位名称：</td>
+				<td>&nbsp;湖南师范大学</td>
+				<td class="tdleft">本科毕业专业名称：</td>
+				<td colspan="2">&nbsp;070101&nbsp;&nbsp;数学与应用数学</td>
+			</tr>
+			<tr>
+				<td class="tdleft">本科毕业年月：</td>
+				<td>&nbsp;199507</td>
+				<td class="tdleft">本科毕业证书编号：</td>
+				<td colspan="2">&nbsp;000</td>
+			</tr>
+			<tr>
+				<td class="tdleft">取得本科学历的学习形式：</td>
+				<td colspan="4">&nbsp;普通全日制</td>
+			</tr>
+			<tr class="trbg01">
+				<th colspan="5" class="tdleft" height="28"><font size="3">硕士学位学历信息</font></th>
+			</tr>
+			<tr>
+				<td class="tdleft">获硕士学位方式：</td>
+				<td >&nbsp;学历教育</td>
+				<td class="tdleft">硕士学位类型：</td>
+				<td colspan="2">&nbsp;学术型</td>
+			</tr>
+			<tr>
+				<td class="tdleft">获硕士学位的单位名称：</td>
+				<td>&nbsp;东南大学</td>
+				<td class="tdleft">获硕士学位专业名称：</td>
+				<td colspan="2">&nbsp;081101&nbsp;&nbsp;控制理论与控制工程</td>
+			</tr>
+			<tr>
+				<td class="tdleft">获硕士学位年月：</td>
+				<td>&nbsp;200103</td>
+				<td class="tdleft">硕士学位证书编号：</td>
+				<td colspan="2">
+					&nbsp;102863010206
+					
+					
+				</td>
+			</tr>
+			<tr>
+				<td class="tdleft">硕士毕业单位名称：</td>
+				<td>&nbsp;东南大学</td>
+				<td class="tdleft">硕士毕业专业名称：</td>
+				<td colspan="2">&nbsp;081101&nbsp;&nbsp;控制理论与控制工程</td>
+			</tr>
+			<tr>
+				<td class="tdleft">硕士毕业年月：</td>
+				<td >&nbsp;200105</td>
+				<td class="tdleft">硕士毕业证书编号：</td>
+				<td colspan="2">&nbsp;10286120010200215</td>
+			</tr>
+			<tr>
+				<td class="tdleft">硕士毕业论文题目：</td>
+				<td colspan="4">&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleft">硕士指导教师姓名：</td>
+				<td >&nbsp;田玉平</td>
+				<td class="tdleft">硕士指导教师职称：</td>
+				<td colspan="2">&nbsp;博士生导师</td>
+			</tr>
+			<tr>
+				<th colspan="5" class="tdleft" height="28"><font size="3">报考信息</font></th>
+			</tr>
+			<tr class="trbg01">
+				<td class="tdleft">考试方式：</td>
+				<td colspan="4">
+					&nbsp;普通招考
+					
+				</td>
+			</tr>
+			<tr class="trbg01">
+				<td class="tdleft">报考单位：</td>
+				<td>&nbsp;同济大学</td>
+				<td class="tdleft">报考院系所：</td>
+				<td colspan="2">&nbsp;电子与信息工程学院</td>
+			</tr>
+			<tr class="trbg01">
+				<td class="tdleft">报考专业：</td>
+				<td>&nbsp;081100&nbsp;&nbsp;控制科学与工程</td>
+				<td class="tdleft">报考研究方向：</td>
+				<td colspan="2">&nbsp;01&nbsp;&nbsp;控制理论与控制工程</td>
+			</tr>
+			<tr class="trbg01">
+				<td class="tdleft">考试科目：</td>
+				
+				
+					<td colspan="4">&nbsp;
+						
+						1001|英语,2021|线性系统理论,3037|控制科学与工程学科综合
+						
+					</td>
+				
+			</tr>
+			<tr class="trbg01">
+				<td class="tdleft">报考导师：</td>
+				<td colspan="4">&nbsp;张皓</td>
+			</tr>
+			<tr class="trbg01">
+				<td class="tdleft">报考类别：</td>
+				<td >&nbsp;定向就业</td>
+				<td class="tdleft">专项计划：</td>
+				<td colspan="2">&nbsp;无</td>
+			</tr>
+			<tr class="trbg01">
+				<td class="tdleft">定向就业所在地：</td>
+				<td >&nbsp;江苏省|无锡市|宜兴市</td>
+				<td class="tdleft">定向就业单位：</td>
+				<td colspan="2">&nbsp;无锡工艺职业技术学院</td>
+			</tr>
+			<tr>
+				<th colspan="5" class="tdleft" height="28"><font size="3">材料信息</font></th>
+			</tr>
+			<tr>
+				<td class="tdleft">户口所在地：</td>
+				<td>&nbsp;上海市|市辖区|闵行区</td>
+				<td class="tdleft">档案所在地：</td>
+				<td colspan="2">&nbsp;江苏省|无锡市|宜兴市</td>
+			</tr>
+			<tr>
+				<td class="tdleft">人事档案所在单位：</td>
+				<td colspan="4">&nbsp;无锡工艺职业技术学院</td>
+			</tr>
+			<tr>
+				<td class="tdleft">人事档案单位详细地址：</td>
+				<td colspan="4">&nbsp;江苏省宜兴市荆邑南路99号</td>
+			</tr>
+			<tr>
+				<td class="tdleft">人事档案单位邮编：</td>
+				<td colspan="4">&nbsp;214221</td>
+			</tr>
+			<tr>
+				<td class="tdleft">考生通信地址：</td>
+				<td colspan="4">&nbsp;江苏省宜兴市荆邑南路99号无锡工艺职业技术学院信息中心</td>
+			</tr>
+			<tr>
+				<td class="tdleft">考生通信地址邮编：</td>
+				<td>&nbsp;214221</td>
+				<td class="tdleft">考生联系电话：</td>
+				<td colspan="2">&nbsp;051081710116</td>
+			</tr>
+			<tr>
+				<td class="tdleft">考生移动电话：</td>
+				<td>&nbsp;15961500998</td>
+				<td class="tdleft">考生电子邮箱：</td>
+				<td colspan="2">&nbsp;497273569@qq.com</td>
+			</tr>
+			<tr>
+				<td class="tdleft">学习工作简历：</td>
+				<td colspan="4">&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleft">奖惩情况：</td>
+				<td colspan="4">&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleft">科研信息：</td>
+				<td colspan="4">&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleft">家庭成员：</td>
+				<td colspan="4">&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleft">个人自述：</td>
+				<td colspan="4">&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleft">备注：</td>
+				<td colspan="4">&nbsp;</td>
+			</tr>
+
+			
+			<tr>
+				<td class="tdleft">申请资料：</td>
+				<td colspan="4">未上传申请资料
+					
+				</td>
+			</tr>
+			
+		</table>
+	</div>
+	</div>
+</body>
+</html>

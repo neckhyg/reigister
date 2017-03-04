@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>考试报名</title>
+    #parse("sys/header.html")
+    #parse("sys/tongji_header.html")
+</head>
+<body>
+<!--
+<div id="rrapp" v-cloak>
+
+    <div v-show="showList">
+        <div class="grid-btn">
+            <div class="form-group col-sm-2">
+                <input type="text" class="form-control" v-model="q.username" @keyup.enter="query" placeholder="用户名">
+            </div>
+            <a class="btn btn-default" @click="query">查询</a>
+            #if($shiro.hasPermission("sys:user:save"))
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+            #end
+            #if($shiro.hasPermission("sys:user:update"))
+            <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+            #end
+            #if($shiro.hasPermission("sys:user:delete"))
+            <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+            #end
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+          -->
+    <div class="contop">
+        <div class="main">
+            <div class="mainbox">
+                <form enctype="multipart/form-data" id="DoctorRecruitSignUpForm" name="DoctorRecruitSignUpForm" action="saveDoctorExamineApplyBasicInfo.do" method="post">
+                    <table cellpadding="0" cellspacing="0" border="0" width="95%" class="box_table" align="center">
+                        <tr>
+                            <td colspan="5" align="center">以下信息必须完整填写，如果填写信息与真实信息有误会直接影响到考生本人的报考或录取</td>
+                        </tr>
+                        <tr>
+                            <th colspan="5" class="tdleft" height="28"><font size="3">考生基本信息</font></th>
+                        </tr>
+                        <tr>
+                            <td width="15%" class="tdleft">考生姓名：</td>
+                            <td width="30%"><input size="30" name="xm" value="何英高" /><font color="red">*</font></td>
+                            <td width="15%" class="tdleft">姓名拼音：</td>
+                            <td width="30%"><input size="30" name="xmpy" value="heyinggao" /><font color="red">*</font></td>
+                            <td rowspan="6" align="center" valign="middle">
+                                照片(规格：150X200)：<br />
+
+                                <img class="img_css" src='/MISPackWeb/10247/GSOA_DoctorExamineApplyManage/DoctorExamApplyImg/430421197206142537.jpg?temp=0.39357822239355655' name="Photo" id="Photo" width="150" height="200"/><br/>
+
+
+                                <input name="photoFileId" type="hidden" id="photoFileId" value=""/>
+                                <a style="color: blue" href="#" class="aOption" onclick="ShowDialog('showDoctorPhotoUploadDialog.do',500,200)">更改照片<font color="red">*</font></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdleft">证件类型：</td>
+                            <td>
+
+                                居民身份证<input name="zjlx" type="hidden" id="zjlx" value="3c1dfe09-ef3c-44ff-b03e-851366f4ccf9">
+
+
+                            </td>
+                            <td class="tdleft">证件号码：</td>
+                            <td>
+                                430421197206142537<input size="20" name="zjhm" id="zjhm" value="430421197206142537" maxlength="18" type="hidden"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdleft">性别：</td>
+                            <td>
+                                <select id=xbm name=xbm>
+                                    <option value="">--请选择--</option>
+
+                                    <option value="5e1807dd-be33-4bc3-ac93-c3891e4b80dd" selected>男</option>
+
+                                    <option value="c5b3f6dd-7f7d-473e-a577-1c807cebdc0e" >女</option>
+
+                                </select>
+                            </td>
+                            <td class="tdleft">民族：</td>
+                            <td>
+                                <select id=mzm name=mzm>
+                                    <option value="">--请选择--</option>
+
+                                    <option value="292f1821-6a07-4f3b-875e-8a6537659835#汉族" selected >汉族</option>
+
+                                    <option value="b620d82d-a1a9-428f-9970-bc4455f38a1e#蒙古族"  >蒙古族</option>
+
+                                    <option value="9c905273-c938-4610-853a-963e03e10a5a#其他"  >其他</option>
+
+                                    <option value="5c14bac9-105b-4fda-99d3-2a296b88f29e#外国血统"  >外国血统</option>
+
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdleft">出生日期：</td>
+                            <td>
+                                <input type="text" name="csrq" id="csrq" value="19720614" size="20" readonly="readonly">(YYYYMMDD)
+                            </td>
+                            <td class="tdleft">现役军人：</td>
+                            <td>
+                                <select id=xyjrm name=xyjrm>
+
+                                    <option value="bsxyjrm_0" selected >非军人</option>
+
+                                    <option value="bsxyjrm_1"  >军队在职干部</option>
+
+                                    <option value="bsxyjrm_2"  >军校学员</option>
+
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                        </tr>
+                        <tr>
+                            <td class="tdleft">外语水平：</td>
+                            <td>
+                                <select name="wysp" id="wysp" >
+                                    <option value="无" >无</option>
+                                    <option value="CET四级" >CET四级</option>
+                                    <option value="CET六级" selected>CET六级</option>
+                                    <option value="其他" >其他</option>
+                                </select>
+                            </td>
+                            <td class="tdleft">外语水平成绩：</td>
+                            <td colspan="2">
+                                <input type="text" name="wyspcj" id="wyspcj" size="8" value="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdleft">外语水平通过时间：</td>
+                            <td>
+                                <input type="text" name="wysptgsj" id="wysptgsj" value="1999-10" >(YYYY-MM)
+                            </td>
+                            <td class="tdleft">职称或职务：</td>
+                            <td colspan="2">
+                                <input type="text" name="zc" id="zc" size="8" value="">
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+                        </div>
+            </div>
+
+        </div>
+                        <!--
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <div class="col-sm-2 control-label">用户名</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.username" placeholder="登录账号"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">密码</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.password" placeholder="密码"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">邮箱</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.email" placeholder="邮箱"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">手机号</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.mobile" placeholder="手机号"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">角色</div>
+                <div class="col-sm-10">
+                    <label v-for="role in roleList" class="checkbox-inline">
+                        <input type="checkbox" :value="role.roleId" v-model="user.roleIdList">{{role.roleName}}
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">状态</div>
+                <label class="radio-inline">
+                    <input type="radio" name="status" value="0" v-model="user.status"/> 禁用
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="status" value="1" v-model="user.status"/> 正常
+                </label>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+        </form>
+    </div>
+
+</div>         -->
+</body>
+</html>

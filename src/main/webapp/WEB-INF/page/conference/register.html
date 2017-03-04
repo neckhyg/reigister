@@ -1,0 +1,152 @@
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+<title>2016成都年会</title>
+<link type="text/css" rel="stylesheet" href="../conference/css/bm2016.css"/>
+<link type="text/css" rel="stylesheet" media="all" href="../conference/css/style.css" />
+<link type="text/css" rel="stylesheet" href="../conference/css/datePicker.css"  />
+<link type="text/css" rel="stylesheet" media="all" href="../conference/css/jquery-ui.min.css" />
+<link type="text/css" rel="stylesheet" media="all" href="../conference/css/jquery-ui-timepicker-addon.css" />
+<script type="text/javascript" src="../conference/js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="../conference/js/Validform_v5.3.2_min.js"></script>
+<script type="text/javascript" src="../conference/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../conference/js/jquery-ui-timepicker-addon.js"></script>
+<script type="text/javascript" src="../conference/js/jquery-ui-sliderAccess.js"></script>
+<script type="text/javascript" src="../conference/js/bm2016.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+		$.post("displayUser",
+			{selectId:0},
+			function(data){
+				$("#username").empty();
+				$("#department").empty();
+				$("#unit").empty();
+				var str="";  
+				if( data != null){  
+				 			$("#username").val(data.userName) ;
+				 			$("#department").val(data.department) ;
+				 			$("#unit").val(data.unit) ;
+				}else{
+				alert("没有找到您需要的信息！");
+				}
+				  
+				//$("#energyItemName").val(2);  
+		},
+		"json");
+}); 
+$(document).ready(function(){
+	$.post("viewAllMajor.action",
+		{selectId:1},
+		function(data){
+			$("#ksMajor").empty();
+			var str="";  
+			for(var i=0;i<data.majorList.length;i++){  
+				str+="<option value='"+data.majorList[i].major+"'>"+data.majorList[i].major+"</option>"  
+			}
+		//	alert(str);
+			$("#ksMajor").html(str);
+			$("#ksMajor").val(1).text;  
+	},
+	"json");		
+});  
+function onchangeSelectMajor(id){
+	   $("#ksMajor").val(id).text;
+		}        
+	
+</script>
+</head>
+<body>  
+<div id="pm">
+<div class="header">
+    <!--
+    <div class="wraper">
+    	<h1><a href="#">融合.创新.实践</a></h1>
+        <ul class="nav">
+            
+            <li><a href="note" >会议通知</a></li>
+            <li><a href="register" >会议报名</a></li>
+            <li><a href="schedule">会议日程</a></li>
+            <li><a href="document">会议资料</a></li>
+
+        </ul>
+    </div>      -->
+</div>
+<div class="main">
+    <div class="wraper">
+    	<h3 class="green">2016年会报名</h3>
+        <form class="registerform" method="post" >
+        <table width="100%" border="0" style="table-layout:fixed;font-size:14px;">
+       
+<tr> <td class='td1'> *</td><td class='td2'> Email：</td><td class='td3'> <input type='text' value='' name='email' id ='email' class='inputxt' datatype='e'
+nllmsg='您的电子邮箱' errmsg=''/> </td> <td class='Validform_checktip'></td></tr>
+<!-- 
+<tr> <td class='td1'>*</td><td class='td2'> 密码：</td><td class='td3'> <input type='password' value='' name='mima' class='inputxt' datatype='*6-16'
+nllmsg='请设置查询密码！' errmsg='密码范围在6~16位之间！'/> </td> <td class='Validform_checktip'></td></tr>
+<tr> <td class='td1'> *</td> <td class='td2'> 确认密码：</td> <td class='td3'> <input type='password' value='' name='mima2' class='inputxt' recheck='mima'
+datatype='*' nllmsg='请再输入一次密码！' errmsg='您两次输入的账号密码不一致！' /> </td> <td class='Validform_checktip'></td></tr>
+ -->
+<tr> <td class='td1'> *</td><td class='td2'> 手机：</td><td class='td3'> <input type='text' value='' name='shouji' class='inputxt'
+datatype='/^1(3[0-9]|4[57]|5[0-35-9]|7[0135678]|8[0-9])\d{8}$/' nllmsg='您的手机号码' errmsg=''/> </td> <td class='Validform_checktip'></td></tr>
+
+ <tr> <td class='td1'> *</td><td class='td2'> 姓名：</td><td class='td3'> <input type='text' value='' name='username' id='username' class='inputxt' datatype='zh2-10' nllmsg=''
+errmsg=''/> </td> <td class='Validform_checktip'></td></tr>
+<tr>  <td class='td1'> *</td> <td class='td2'> 性别：</td> <td class='td3'> <label><input type='radio' name='sex'class='pr1'  value='男' datatype="*" nullmsg="请选择！" errormsg="请选择"/>男</label><br><label><input type='radio' name='sex'class='pr1' value='女' />女</label> <br></td> <td class='Validform_checktip'></td></tr>
+<tr> <td class='td1'> *</td><td class='td2'> 单位：</td><td class='td3'> <input type='text' value='' name='unit' id='unit' class='inputxt' onblur='getdanwei()' datatype='zh5-25' nllmsg='' errmsg=''/> </td> <td class='Validform_checktip'></td></tr>
+<tr> <td class='td1'> *</td><td class='td2'> 部门：</td><td class='td3'> <input type='text' value='' name='department' id='department' class='inputxt' datatype='zh3-15' nllmsg='' errmsg=''/> </td> <td class='Validform_checktip'></td></tr>
+<tr> <td class='td1'> *</td><td class='td2'> 职务或职称：</td><td class='td3'> <input type='text' value='' name='zhiwu' class='inputxt' datatype='s' nllmsg='' errmsg=''/> </td> <td class='Validform_checktip'>多项请用空格分隔</td></tr>
+<tr>  <td class='td1'> *</td> <td class='td2'> 预定房间：</td> <td class='td3'> <label><input type='radio' name='roomtype' class='pr1'  value='标准间-合住-1床位' datatype="*" nullmsg="请选择！" errormsg="请选择" />标准间-合住-1床位</label> <br><label><input type='radio' name='roomtype' class='pr1' value='标准间-1间' />标准间-1间</label> <br><label><input type='radio' name='roomtype' class='pr1' value='单人间' />单人间-1间</label>
+<br><label><input type='radio' name='roomtype' class='pr1' value='不住这里' />不住这里</label> <br></td> <td class='Validform_checktip'></td></tr>
+<tr> <td class='td1'> </td><td class='td2'> 航班号/铁路车次：</td><td class='td3'> <input type='text' value='' name='hangban' class='inputxt'  nllmsg='' errmsg='' /></td> <td class='Validform_checktip'>例如：CA4114、G307 、K187……待定暂不填写</td></tr>
+<tr> <td class='need' style='width:10px;待定暂不填写 vertical-align:middle;'> </td><td class='td2'> 抵达日期：</td><td class='td3'> <input type='text' id="dtpick" value='' name='ddriqi' class='inputxt' /> </td> <td class='Validform_checktip'>已经订票，请选择抵达日期、时间，待定暂不填写</td></tr>
+
+<tr> <td class='td1'> </td><td class='td2'> 考试类别：</td><td class='td3' style="top:5px"> <select  name="ksMajor" id="ksMajor">
+         <option value="sk" >选择专业</option>
+    	<option value="sk" >数控技术</option>
+    	<option value="dz" >电子信息</option>
+    	<option value="fz" >服装设计</option>
+    	<option value="tc" >陶瓷艺术</option>	
+</select></td> <td class='Validform_checktip'>请选择考试类别</td></tr>
+
+<tr> <td class='td1'> </td><td class='td2'> 发票单位：</td><td class='td3'> <input type='text' value='' name='fapiao1' id='fapiao1' class='inputxt' datatype='*' nllmsg='' errmsg=''/> </td> <td class='Validform_checktip'>需要发票请填写，不需要不填</td></tr>
+<tr> <td class='td1'> </td><td class='td2'> 发票项目：</td><td class='td3'> <input type='text' value='会议费' name='fapiao2' class='inputxt' datatype='*' nllmsg='' errmsg=''/> </td> <td class='Validform_checktip'></td></tr>
+<tr> <td class='td1'> *</td><td class='td2'> 收件地址：</td><td class='td3'> <input type='text' value='' name='dizhi' class='inputxt' datatype='s9-30' nllmsg='' errmsg=''/> </td> <td class='Validform_checktip'>用于发票、资料等的寄送</td></tr>
+<tr> <td class='td1'> *</td><td class='td2'> 邮编：</td><td class='td3'> <input type='text' value='' name='youbian' class='inputxt' datatype='/^[1-9]\d{5}$/' nllmsg='' errmsg=''/> </td> <td class='Validform_checktip'></td></tr>
+<tr>  <td class='td1'> </td> <td class='td2'> 备注：</td> <td class='td3'>  <textarea tip='请在这里输入您的备注、建议……' altercss='gray' class='gray'
+name='beizhu' value=''></textarea></td> <td class='Validform_checktip'>请在这里输入您的备注、建议……</td></tr>
+ 
+<tr>
+	<td class="need"></td>
+	<td></td>
+	<input type="hidden" name="cscr" id="cscr" value=""/> 
+	<td><input type="submit" value="提 交" /> <!-- <input type="reset" value="重 置" / --></td>	
+	<td></td>
+</tr>
+</table>
+</form>
+
+  </div>
+</div>
+
+<div class="footer">
+    <div class="wraper">
+        <p class="fl">Copyright &copy; 2016</p>
+        <p class="fr"><a href="http://www.cdp.edu.cn" target="_blank">cdp.edu.cn</a></p>
+    </div>
+</div>
+</div>
+
+
+
+<!-- ver:.1121 -->
+</body>
+</html>

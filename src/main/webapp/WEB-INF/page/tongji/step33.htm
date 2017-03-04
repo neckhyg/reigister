@@ -1,0 +1,669 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
+
+
+
+
+<link rel="stylesheet" type="text/css" href="../tongji/css/extremecomponents.css">
+<link href="../tongji/css/yanzhao.css" rel="stylesheet" type="text/css">
+<link type="text/css" rel="stylesheet" href="../tongji/css/kuangjia.css"/>
+<link type="text/css" rel="stylesheet" href="/css/jquery.ui.all.css" />
+<link href="../tongji/css/jquery.validate.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../tongji/js/jquery.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.validate.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.validate.messages_cn.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.ui.all.js"></script>
+
+
+
+<html>
+<head>
+<title>修改博士报名信息</title>
+<META http-equiv=Content-Type content="text/html; charset=utf-8">
+<link href="../tongji/css/style1216.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="../tongji/js/jquery.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.validate.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.validate.messages_cn.js"></script>
+<style type="text/css">
+.tdleft{
+	width:160px;
+}
+</style>
+<script type="text/javascript">
+
+var zsnd = "2017";
+$(document).ready(function(){
+
+	$.validator.addMethod("ifRequired",function(value, element, param) {
+	if(jQuery.inArray($("#"+param[0]).val(), param[1])>=0){
+		return $.trim(value).length > 0;
+	}
+	return true;},$.validator.format("必选字段"));
+
+	$.validator.addMethod("noRequired",function(value, element, param) {
+	if(jQuery.inArray($("#"+param[0]).val(), param[1])<0){
+		return $.trim(value).length > 0;
+	}
+	return true;},$.validator.format("必选字段"));
+	jQuery.validator.addMethod("yzbmCheck", function(value, element){
+		var tel = /^[0-9]{6}$/; 
+		return this.optional(element) || (tel.test(value)); 
+	}, "请正确填写邮政编码"); 
+	jQuery.validator.addMethod("yddhCheck", function(value, element){
+		var length = value.length; 
+		var mobile = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/; 
+		var tel = /^\d{3,4}-?\d{7,9}$/; 
+		return this.optional(element) || (tel.test(value) || mobile.test(value));
+	}, "请正确填写的电话号码");
+	
+	//为inputForm注册validate函数
+	var signUpFormValidator =
+	$("#DoctorRecruitSignUpForm").validate({
+		onkeyup:false,
+		onclick:false,
+		onfocusout:false,
+		rules: {
+			hkszdm:{required:true},//户口所在地不能为空hkszdmc
+			daszdm:{required:true},//档案所在地不能为空daszdmc
+			daszdw:{required:true},//档案所在单位不能为空daszdw
+			daszdwdz:{required:true},//档案所在单位地址不能为空daszdwdz
+			daszdwyzbm:{required:true,yzbmCheck:true},//档案所在单位邮政编码不能为空 daszdwyzbm
+			txdz:{required:true},//考生通信地址不能为空txdz
+			yzbm:{required:true,yzbmCheck:true},//考生通信地址邮政编码不能为空 yzbm
+			yddh:{required:true,yddhCheck:true},//考生移动电话不能为空 lxdh
+			xxgzjl:{maxlength:220},//学习工作简历长度不能大于220个字符xxgzjl
+			jlcf:{maxlength:220},//奖励惩罚的长度不能大于220个字符jlcf
+			jtcy:{maxlength:220},//家庭成员的长度不能大于220个字符jtcy
+			fblwzz:{maxlength:300 },//科研信息的长度不能大于300个字符fblwzz
+			byxx:{maxlength:220}//备用信息的长度不能大于220个字符byxx
+		}
+	});
+	$("#refer").click(function() {
+		var hasError = false;
+		concat("jtcy",4);
+		concat("xxgzjl",6);
+		if(signUpFormValidator.form()){ //若验证通过，则调用保存/修改方法
+			var errors = {};
+			if($("#xxgzjl").val()) {
+				if ($("#xxgzjl").val().indexOf("||")>=0
+						|| $("#xxgzjl").val().indexOf("|#")>=0
+						|| $("#xxgzjl").val().lastIndexOf("|")==($("#xxgzjl").val().length-1)) {
+					alert("请完整填写【学习工作简历】中单条内容的每一项");
+					hasError = true;
+				}
+				if ($("#xxgzjl").val().length>220){
+					errors["xxgzjl"] = "最多220字符";
+					hasError = true;
+				}
+			}
+			if($("#jlcf").val() && $("#jlcf").val().length>220){
+				errors["jlcf"] = "最多220字符";
+				 hasError = true;
+			}
+			if($("#jtcy").val()) {
+				if ($("#jtcy").val().indexOf("||")>=0
+						|| $("#jtcy").val().indexOf("|#")>=0
+						|| $("#jtcy").val().lastIndexOf("|")==($("#jtcy").val().length-1)) {
+					alert("请完整填写【家庭成员】中单条内容的每一项");
+					hasError = true;
+				}
+				if ($("#jtcy").val().length>220){
+					errors["jtcy"] = "最多220字符";
+					hasError = true;
+				}
+			}
+			if($("#grzs").val()) {
+				if ($('#schoolCode').val()=='10252' && $("#grzs").val().length<=1500) {
+					errors["grzs"] = "最少1500字符";
+					hasError = true;
+				} else if ($('#schoolCode').val()!='10252' && $("#grzs").val().length > 700) {
+					errors["grzs"] = "最多700字符";
+					hasError = true;
+				}
+			}
+			if($("#fblwzz").val() && $("#fblwzz").val().length>300){
+				errors["fblwzz"] = "最多300字符";
+				 hasError = true;
+			}
+			
+			if($("#byxx").val() && $("#byxx").val().length>220){
+				errors["byxx"] = "最多220字符";
+				 hasError = true;
+			}
+			
+			if (true) {
+				if($.trim($("#qzny_0").val()).length==0){
+					hasError = true;
+					errors["qzny_0"] = "至少填写第一行";
+				}
+				if($.trim($("#xxhgzdw_0").val()).length==0){
+					hasError = true;
+					errors["xxhgzdw_0"] = "至少填写第一行";
+				}
+				if($.trim($("#xxgzjl_2_0").val()).length==0){
+					hasError = true;
+					errors["xxgzjl_2_0"] = "至少填写第一行";
+				}
+				if($.trim($("#xxgzjl_3_0").val()).length==0){
+					hasError = true;
+					errors["xxgzjl_3_0"] = "至少填写第一行";
+				}
+			}
+			
+			if (false) {
+				if($.trim($("#jlcf").val()).length==0){
+					hasError = true;
+					errors["jlcf"] = "必填字段";
+				}
+			}
+			
+			if (true) {
+				if($.trim($("#jtcy_0_0").val()).length == 0){
+					hasError = true;
+					errors["jtcy_0_0"] = "至少填写第一行";
+				}
+				if($.trim($("#jtcy_1_0").val()).length == 0){
+					hasError = true;
+					errors["jtcy_1_0"] = "至少填写第一行";
+				}
+				if($.trim($("#jtcy_2_0").val()).length == 0){
+					hasError = true;
+					errors["jtcy_2_0"] = "至少填写第一行";
+				}if($.trim($("#jtcy_3_0").val()).length == 0){
+					hasError = true;
+					errors["jtcy_3_0"] = "至少填写第一行";
+				}
+			}
+			
+			if (false) {
+				if($.trim($("#grzs").val()).length==0){
+					hasError = true;
+					errors["grzs"] = "必填字段";
+				}
+			}
+			
+			if (true) {
+				if($.trim($("#fblwzz").val()).length==0){
+					hasError = true;
+					errors["fblwzz"] = "必填字段";
+				}
+			}
+			
+			if (true) {
+				var file = document.getElementById('zipfile').innerHTML;
+				if(file != null && file.indexOf("downloadDoctorExamineApplyFile.do") < 0){
+					alert("请上传附件！");
+					return;
+				}
+			}
+			
+			if(hasError){
+				signUpFormValidator.showErrors(errors);
+			}
+		} else {
+			hasError = true;
+		}
+
+		if(hasError) {
+			alert("请按照提示信息修改后提交！")
+		}else {
+			
+				
+			if(confirm('提交后不能修改，确定提交吗？')){
+				$("#type").val('1');
+				$("#subType").val("submit");
+				$("#DoctorRecruitSignUpForm").submit();
+			}
+				
+		}
+	});
+	
+	function concat(element,size){
+		var value="";
+		var sharp = false;
+		for(var i=0;i<size;i++){
+			var items = $("#" + element + i +" input");
+			var tmp = "";
+			for(var j=0;j<items.length;j++){
+				var v = items[j].value.replace(/\|/g,"").replace(/#/g,"");
+				if(j==0) tmp+=v;
+				else tmp+="|" + v;
+			}
+			if(tmp.length>3){
+				if(sharp) value+="#";
+				value +=tmp;
+				sharp = true;
+			}
+		}
+		$("#"+element).val(value);
+	}
+	
+	$("#save").click(function() {
+		var  hasError = false;	
+		concat("jtcy",4);
+		concat("xxgzjl",6);
+		var errors = {};
+
+		if($("#xxgzjl").val()) {
+			if ($("#xxgzjl").val().indexOf("||")>=0
+				|| $("#xxgzjl").val().indexOf("|#")>=0
+				|| $("#xxgzjl").val().lastIndexOf("|")==($("#xxgzjl").val().length-1)) {
+				alert("请完整填写【学习工作简历】中单条内容的每一项");
+				hasError = true;
+			}
+			if ($("#xxgzjl").val().length>220){
+				errors["xxgzjl"] = "最多220字符";
+				hasError = true;
+			}
+		}
+		
+		if($("#jlcf").val() && $("#jlcf").val().length>220){
+			errors["jlcf"] = "最多220字符";
+			 hasError = true;
+		}
+		
+		if($("#jtcy").val()) {
+			if ($("#jtcy").val().indexOf("||")>=0
+					|| $("#jtcy").val().indexOf("|#")>=0
+					|| $("#jtcy").val().lastIndexOf("|")==($("#jtcy").val().length-1)) {
+				alert("请完整填写【家庭成员】中单条内容的每一项");
+				hasError = true;
+			}
+			if ($("#jtcy").val().length>220){
+				errors["jtcy"] = "最多220字符";
+				hasError = true;
+			}
+		}
+		
+		if($("#fblwzz").val() && $("#fblwzz").val().length>300){
+			errors["fblwzz"] = "最多300字符";
+			 hasError = true;
+		}
+		if($("#byxx").val() && $("#byxx").val().length>220){
+			errors["byxx"] = "最多220字符";
+			 hasError = true;
+		}
+		
+		if(errors.length>0 || hasError){
+			signUpFormValidator.showErrors(errors);
+			return false;
+		}
+		
+	 	alert("确认信息无误后，请点击提交按钮提交信息以完成报名，提交信息后不可再修改报名信息！");
+		$("#subType").val('save');
+	 	$("#DoctorRecruitSignUpForm").submit();
+	});
+	
+	grzsInputHidden();
+	
+	$("#grzslf").change(function(){grzsInputHidden();});
+	function grzsInputHidden(){
+		var value = $("#grzslf").attr("checked");
+		if(value){
+			document.getElementById('grzsInput').style.display="none";
+		} else {
+			document.getElementById('grzsInput').style.display="";
+		}
+	}
+});
+
+//上传文件
+function ShowDialog(URL, Width, Height){
+	window.open(URL, '', 'height='+Height+', width='+Width+', top=0, lef t=0, toolbar=no, menubar=no, scrollbars=no,resizable=no,location=no, statu s=no');
+}
+
+function popUpWindow(URLStr, left, top, width, height){
+	window.open (URLStr, '', 'width='+width+',height='+height+',left='+left+', top='+top+', toolbar=no, menubar=no, scrollbars=yes, resizable=yes,location=no, status=no');
+}
+</script>
+</head>
+
+<body>
+	<div class="contop">
+		<div class="main">
+			<div class="mainbox">
+				<form enctype="multipart/form-data" id="DoctorRecruitSignUpForm" name="DoctorRecruitSignUpForm" action="saveDoctorExamineApplyMaterialInfo.do" method="post">
+				<table cellpadding="0" cellspacing="0" border="0" width="95%" class="box_table" align="center">
+					<tr>
+						<td colspan="5" align="center">以下信息必须完整填写，如果填写信息与真实信息有误会直接影响到考生本人的报考或录取</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<th colspan="5" class="tdleft" height="28"><font size="3">材料信息</font></th>
+					</tr>
+					<tr>
+						<td class="tdleft">户口所在地：</td>
+						<td>
+							<input type="text" name="hkszdmc" id="hkszdmc" value="上海市|市辖区|闵行区" readonly="readonly" /><font color="red">*</font> 
+							<input type="hidden" name="hkszdm" id="hkszdm" value="310112" />
+							<label><a href="javascript:popUpWindow('drSelRegionlism.do?name=hkszdmc&Id=hkszdm',400,100,500,500);">选择户口地</a></label>
+						</td>
+						<td class="tdleft">档案所在地：</td>
+						<td colspan="2">
+							<input type="text" name="daszdmc" id="daszdmc" value="江苏省|无锡市|宜兴市" readonly="readonly" /><font color="red">*</font> 
+							<label><a href="javascript:popUpWindow('drSelRegionlism.do?name=daszdmc&Id=daszdm',400,100,500,500);">选择档案地</a></label>
+							<input type="hidden" name="daszdm" id="daszdm" value="320282" />
+						</td>
+					</tr>
+					<tr>
+						<td class="tdleft">人事档案所在单位：</td>
+						<td colspan="4">
+							<input type=text size="20" name=daszdw value="无锡工艺职业技术学院" maxlength="60"><font color="red">*</font>
+						</td>
+					</tr>
+					<tr>
+						<td class="tdleft">人事档案单位详细地址：</td>
+						<td colspan="4">
+							<input type=text size=80 name=daszdwdz value="江苏省宜兴市荆邑南路99号" maxlength="80"><font color="red">*</font>
+						</td>
+					</tr>
+					<tr>
+						<td class="tdleft">人事档案单位邮编：</td>
+						<td colspan="4">
+							<input type=text size="20" name=daszdwyzbm value="214221" maxlength="6"><font color="red">*</font>
+						</td>
+					</tr>
+					<tr>
+						<td class="tdleft">考生通信地址：</td>
+						<td colspan="4">
+							<input type=text size=80 name=txdz value="江苏省宜兴市荆邑南路99号无锡工艺职业技术学院信息中心" maxlength="60"><font color="red">*</font><br />通讯地址为接收录取通知书等的地址，请务必准确、详细，否则由此产生邮递延误，责任由考生自负！
+						</td>
+					</tr>
+					<tr>
+						<td class="tdleft">考生通信地址邮编：</td>
+						<td>
+							<input type=text size="20" name=yzbm value="214221" maxlength="6"><font color="red">*</font>
+						</td>
+						<td class="tdleft">考生移动电话：</td>
+						<td colspan="2">
+							<input type=text size="20" name=yddh value="15961500998" maxlength="12">
+						</td>
+					</tr>
+					<tr>
+						<td class="tdleft">考生联系电话：</td>
+						<td>
+							<input type=text size="20" name=lxdh value="051081710116" maxlength="40"><font color="red">*</font>
+						</td>
+						<td class="tdleft">考生电子邮箱：</td>
+						<td colspan="2">
+							
+								497273569@qq.com
+								<input type="hidden" name=dzxx value="497273569@qq.com">
+							
+							
+						</td>
+					</tr>
+					<tr>
+						<td colspan="5" style="text-align: left;" class="tdleft">
+							学习工作简历：(<strong>从大学开始</strong>到现在的学习工作情况，请至少填写一条)
+						</td>
+					</tr>
+					<tr>
+						<td colspan="5">
+							<input type="hidden" name=xxgzjl id="xxgzjl" rows=10 cols=60 />
+							<table cellpadding="0" cellspacing="0" border="0" width="100%" class="" align="center">
+								<tr>
+									<td width="20%" align="center">起止年月</td>
+									<td width="45%" align="center">学习和工作单位</td>
+									<td width="22%" align="center">任何职务</td>
+									<td width="13%" align="center">证明人</td>
+								</tr>
+								
+								<tr id="xxgzjl0">
+									<td width="20%" align="center">
+										<input type="text" name="qzny_0" id="qzny_0" size="24" value="" />
+									</td>
+									<td width="45%" align="center">
+										<input type="text" name="xxhgzdw_0" id="xxhgzdw_0" size="60" value="" />
+									</td>
+									<td width="22%" align="center">
+										<input type="text" size="25" name="xxgzjl_2_0" id="xxgzjl_2_0" value="" />
+									</td>
+									<td width="13%" align="center">
+										<input type="text" size="12" name="xxgzjl_3_0" id="xxgzjl_3_0" value="" />
+									</td>
+								</tr>
+								
+								<tr id="xxgzjl1">
+									<td width="20%" align="center">
+										<input type="text" name="qzny_1" id="qzny_1" size="24" value="" />
+									</td>
+									<td width="45%" align="center">
+										<input type="text" name="xxhgzdw_1" id="xxhgzdw_1" size="60" value="" />
+									</td>
+									<td width="22%" align="center">
+										<input type="text" size="25" name="xxgzjl_2_1" id="xxgzjl_2_1" value="" />
+									</td>
+									<td width="13%" align="center">
+										<input type="text" size="12" name="xxgzjl_3_1" id="xxgzjl_3_1" value="" />
+									</td>
+								</tr>
+								
+								<tr id="xxgzjl2">
+									<td width="20%" align="center">
+										<input type="text" name="qzny_2" id="qzny_2" size="24" value="" />
+									</td>
+									<td width="45%" align="center">
+										<input type="text" name="xxhgzdw_2" id="xxhgzdw_2" size="60" value="" />
+									</td>
+									<td width="22%" align="center">
+										<input type="text" size="25" name="xxgzjl_2_2" id="xxgzjl_2_2" value="" />
+									</td>
+									<td width="13%" align="center">
+										<input type="text" size="12" name="xxgzjl_3_2" id="xxgzjl_3_2" value="" />
+									</td>
+								</tr>
+								
+								<tr id="xxgzjl3">
+									<td width="20%" align="center">
+										<input type="text" name="qzny_3" id="qzny_3" size="24" value="" />
+									</td>
+									<td width="45%" align="center">
+										<input type="text" name="xxhgzdw_3" id="xxhgzdw_3" size="60" value="" />
+									</td>
+									<td width="22%" align="center">
+										<input type="text" size="25" name="xxgzjl_2_3" id="xxgzjl_2_3" value="" />
+									</td>
+									<td width="13%" align="center">
+										<input type="text" size="12" name="xxgzjl_3_3" id="xxgzjl_3_3" value="" />
+									</td>
+								</tr>
+								
+								<tr id="xxgzjl4">
+									<td width="20%" align="center">
+										<input type="text" name="qzny_4" id="qzny_4" size="24" value="" />
+									</td>
+									<td width="45%" align="center">
+										<input type="text" name="xxhgzdw_4" id="xxhgzdw_4" size="60" value="" />
+									</td>
+									<td width="22%" align="center">
+										<input type="text" size="25" name="xxgzjl_2_4" id="xxgzjl_2_4" value="" />
+									</td>
+									<td width="13%" align="center">
+										<input type="text" size="12" name="xxgzjl_3_4" id="xxgzjl_3_4" value="" />
+									</td>
+								</tr>
+								
+								<tr id="xxgzjl5">
+									<td width="20%" align="center">
+										<input type="text" name="qzny_5" id="qzny_5" size="24" value="" />
+									</td>
+									<td width="45%" align="center">
+										<input type="text" name="xxhgzdw_5" id="xxhgzdw_5" size="60" value="" />
+									</td>
+									<td width="22%" align="center">
+										<input type="text" size="25" name="xxgzjl_2_5" id="xxgzjl_2_5" value="" />
+									</td>
+									<td width="13%" align="center">
+										<input type="text" size="12" name="xxgzjl_3_5" id="xxgzjl_3_5" value="" />
+									</td>
+								</tr>
+								
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td class="tdleft">
+							<P>奖惩情况</P>
+							<p>（何时、何地、因何原因受过何种奖励或处分）</p>
+						</td>
+						<td colspan="4"><textarea name=jlcf id=jlcf rows=15 cols=87></textarea>(最长220字)</td>
+					</tr>
+					<tr>
+						<td class="tdleft"><P>个人自述</P><p>（包括政治表现、外语水平、业务和科研能力）</p></td>
+						<td colspan="4">
+							
+							<div id="grzsInput">
+								<textarea name=grzs id=grzs rows=15 cols=87></textarea>
+								
+								(最多700字)
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="tdleft">
+							<p>参加过哪些科研工作，有无著作、论文、报告、译著？</p>
+							<p>（已经发表或交流的请注明刊物、会议名称及时间）</p>
+						</td>
+						<td colspan="4">
+							<textarea name=fblwzz id=fblwzz rows=15 cols=87></textarea>(最长300字)
+						</td>
+					</tr>
+					<tr>
+						<td colspan="5" style="text-align: left;" class="tdleft">家庭主要成员：</td>
+					</tr>
+					<tr>
+						<td colspan="5">
+							<input type="hidden" name=jtcy id="jtcy" rows=5 cols=60 />
+							<table cellpadding="0" cellspacing="0" border="0" width="100%" class="" align="center">
+								<tr>
+									<td width="15%" align="center">姓名</td>
+									<td width="15%" align="center">与本人关系</td>
+									<td width="15%" align="center">政治面貌</td>
+									<td width="55%" align="center">现在何单位任何职务</td>
+								</tr>
+								
+								<tr id="jtcy0">
+									<td align="center">
+										<input type="text" size="15" name="jtcy_0_0" id="jtcy_0_0" value="" />
+									</td>
+									<td align="center">
+										<input type="text" size="15" name="jtcy_1_0" id="jtcy_1_0" value="" />
+									</td>
+									<td align="center">
+										<input type="text" size="15" name="jtcy_2_0" id="jtcy_2_0" value="" />
+									</td>
+									<td align="center">
+										<input type="text" size="68" name="jtcy_3_0" id="jtcy_3_0" value="" />
+									</td>
+								</tr>
+								
+								<tr id="jtcy1">
+									<td align="center">
+										<input type="text" size="15" name="jtcy_0_1" id="jtcy_0_1" value="" />
+									</td>
+									<td align="center">
+										<input type="text" size="15" name="jtcy_1_1" id="jtcy_1_1" value="" />
+									</td>
+									<td align="center">
+										<input type="text" size="15" name="jtcy_2_1" id="jtcy_2_1" value="" />
+									</td>
+									<td align="center">
+										<input type="text" size="68" name="jtcy_3_1" id="jtcy_3_1" value="" />
+									</td>
+								</tr>
+								
+								<tr id="jtcy2">
+									<td align="center">
+										<input type="text" size="15" name="jtcy_0_2" id="jtcy_0_2" value="" />
+									</td>
+									<td align="center">
+										<input type="text" size="15" name="jtcy_1_2" id="jtcy_1_2" value="" />
+									</td>
+									<td align="center">
+										<input type="text" size="15" name="jtcy_2_2" id="jtcy_2_2" value="" />
+									</td>
+									<td align="center">
+										<input type="text" size="68" name="jtcy_3_2" id="jtcy_3_2" value="" />
+									</td>
+								</tr>
+								
+								<tr id="jtcy3">
+									<td align="center">
+										<input type="text" size="15" name="jtcy_0_3" id="jtcy_0_3" value="" />
+									</td>
+									<td align="center">
+										<input type="text" size="15" name="jtcy_1_3" id="jtcy_1_3" value="" />
+									</td>
+									<td align="center">
+										<input type="text" size="15" name="jtcy_2_3" id="jtcy_2_3" value="" />
+									</td>
+									<td align="center">
+										<input type="text" size="68" name="jtcy_3_3" id="jtcy_3_3" value="" />
+									</td>
+								</tr>
+								
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td class="tdleft">备注：</td>
+						<td colspan="4">
+							<input type=text size=80 name=byxx id=byxx value="" maxlength="100">(最多100字)
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td class="tdleft">上传申请资料：</td>
+						<td colspan="4">
+							
+							
+								<div id="zipfile">未上传过申请文件。</div>
+							
+							<a style="color: blue" href="#" class="aOption" onClick="ShowDialog('showDoctorFileUploadDialog.do',400,200)">
+								详见《2016年博士生网报公告》第六条
+								
+							</a>
+							
+								<input type="hidden" id="zipfilepath" name="zipfilepath" value="">
+							
+						</td>
+					</tr>
+					
+				</table>
+				<div class=div_BottomBar>
+					<input type="hidden" name="type" id="type" value="">
+					<input type="hidden" id="schoolCode" name="schoolCode" value="10247">
+					<input type="hidden" id="pay" name="pay" value="false">
+					<input type="hidden" id="bmh" name="bmh" value="">
+					<input type="hidden" id="bmhi" name="bmhi" value="0">
+					<input type="hidden" id="remark" name="remark" value="">
+					<input type="hidden" id="isAuditing" name="isAuditing" value="0">
+					<input type="hidden" id="displayBmh" name="displayBmh" value="false">
+					<input type="hidden" id="wsjf" name="wsjf" value="true">
+					<input type="hidden" name="subType" id="subType" value="">
+					
+					<!-- 变更记录用字段 变更前 -->
+					<input type="hidden" id="bef_daszdw" name="bef_daszdw" value="无锡工艺职业技术学院">
+					<input type="hidden" id="bef_daszdwdz" name="bef_daszdwdz" value="江苏省宜兴市荆邑南路99号">
+					<input type="hidden" id="bef_daszdwyzbm" name="bef_daszdwyzbm" value="江苏省宜兴市荆邑南路99号">
+					
+					<div align="center">
+						<input id="last" onclick="window.location.href='editDoctorExamineApplyDegreeInfo.do?id=ff808081588598b90158b0af6d590b2a'" type="button" value="上一步" name="last" />
+						
+						<input type="button" value=保存 name="save" id="save">
+						
+						<input type="button" value="提交" name="refer" id="refer">
+						
+						
+					</div>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

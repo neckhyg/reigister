@@ -1,0 +1,230 @@
+/* CSS Document */
+body {
+	font-size:12px;
+	font-family:宋体;		
+	color:#333333;
+	line-height:150%;
+}
+p {	
+	color:#333333;
+	line-height:150%;
+}
+td {
+	font-size:12px;
+	font-family:宋体;		
+	color:#333333;
+}
+td.whit {	
+	color:#ffffff;
+}
+.topmenu{
+text-decoration:none;
+color:#32648b
+}
+.topmenu1:hover{
+text-decoration:none;
+color:white;
+}
+.subtext {
+	line-height:170%;}
+fieldset {
+	padding:10px;
+}
+select {
+	
+}
+input {
+	
+}
+.menu{
+padding-left:8px;
+padding-right:8px;
+padding-top:5px;
+padding-bottom:5px;
+cursor:hand;
+line-height:20px;
+border-bottom:1px solid #ec9800;
+}
+.content {
+	FONT-SIZE: 12px; COLOR: #333333; LINE-HEIGHT: 150%; 
+}
+.formtextfield {
+    FONT-SIZE: 11px;
+    FONT-FAMILY: "tahoma"
+}
+.formbutton {
+	BORDER-TOP-WIDTH: 1px; BORDER-LEFT-WIDTH: 1px; BACKGROUND: #d7d7d7; BORDER-BOTTOM-WIDTH: 1px; COLOR: #4d4d4d;  HEIGHT: 20px; BORDER-RIGHT-WIDTH: 1px
+}
+.singlelink {
+	COLOR: #0000cc
+}
+A{
+	COLOR: #000000; TEXT-DECORATION: none;
+	line-height:170%;
+}
+A:hover {
+	COLOR: #444444; TEXT-DECORATION: underline;line-height:170%;
+}
+A.nav:link {
+	 COLOR: #ffffff; TEXT-DECORATION: none;line-height:170%;
+}
+A.nav:visited {
+	COLOR: #ffffff; TEXT-DECORATION: none;line-height:170%;
+}
+A.nav:hover {
+	COLOR: #eeeeee; text-decoration: underline;;line-height:170%;
+}
+A.activenav:link {
+	FONT-WEIGHT: bold; COLOR: #ffae00; TEXT-DECORATION: none;line-height:170%;
+}
+A.activenav:visited {
+	FONT-WEIGHT: bold; COLOR: #ffae00; TEXT-DECORATION: none;line-height:170%;
+}
+A.activenav:hover {
+	FONT-WEIGHT: bold; COLOR: #ffae00; decoration: underline;line-height:170%;
+}
+.toppanel {
+	FONT-SIZE: 10px; COLOR: #ffffff; 
+}
+.titlebg2 {
+	BACKGROUND: #a8bfd1
+}
+.titlebg3 {
+	BACKGROUND: #9f9a86
+}
+.subtitle {
+	FONT-WEIGHT: bold; FONT-SIZE: 12px; COLOR: #ffffff;  BACKGROUND-COLOR: #666666
+}
+.footer {
+	FONT-WEIGHT: bold; FONT-SIZE: 10px; COLOR: #cccccc; 
+}
+A.terms:link {
+	FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-DECORATION: none;line-height:170%;
+}
+A.terms:visited {
+	FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-DECORATION: none;line-height:170%;
+}
+A.terms:hover {
+	FONT-WEIGHT: bold; COLOR: #eeeeee; decoration: underline;line-height:170%;
+}
+A.more:link {
+	FONT-WEIGHT: bold; COLOR: #850b0b; TEXT-DECORATION: none;line-height:170%;
+}
+A.more:visited {
+	FONT-WEIGHT: bold; COLOR: #000000; ??TEXT-DECORATION: none;line-height:170%;
+}
+A.more:hover {
+	FONT-WEIGHT: bold; COLOR: #eeeeee; decoration: underline;line-height:170%;
+}
+.title {
+	FONT-WEIGHT: bold; FONT-SIZE: 12px; COLOR: #616161; 
+}
+
+a.menu1{
+color:black;
+text-decoration:none;
+
+font-family:verdana,aria;}
+a.menu1:hover{
+color:black;
+text-decoration:none;}
+.p12{
+font-family:arial,verdana;
+}
+.p11{
+
+}
+.p10{font-size:10px;
+
+}
+.black8 {
+	border-right:1px solid #808080;
+	border-bottom:1px solid #808080;
+}
+a.news{color:#4f4f4f;text-decoration:none;}
+a.news:hover{color:silver;text-decoration:none;}
+a.bottom{color:white;text-decoration:none;}
+a.bottom:hover{color:#ffd400;text-decoration:none;}
+
+a.main1{color:#ffffff;
+text-decoration:none;
+font-weight:normal;}
+a.main1:hover{color:#eeeeee;
+text-decoration:none;
+font-weight:normal;}
+a.main2{color:black;
+text-decoration:none;
+font-weight:bold;}
+a.main2:hover{color:#333333;
+text-decoration:none;
+font-weight:bold;}
+a.main3{color:#333333;
+text-decoration:none;}
+a.main3:hover{color:#444444;
+text-decoration:underline;}
+
+.linetitle{
+border-bottom:1px solid #D7D7CE;
+background:#EAEAE6;
+padding-left:10px;
+height:20px;
+}
+.linetitle1{
+border-bottom:1px solid #C8D2E3;
+background:#EAEEF4;
+padding-left:10px;
+height:20px;
+}
+.homeprogram{
+padding-left:10px;
+padding-top:5px;
+padding-bottom:10px;
+padding-right:10px;
+}
+
+.divcolhead {
+	SCROLLBAR-FACE-COLOR: buttonface; SCROLLBAR-HIGHLIGHT-COLOR: buttonface; SCROLLBAR-SHADOW-COLOR: buttonface; SCROLLBAR-3DLIGHT-COLOR: buttonface; SCROLLBAR-ARROW-COLOR: buttonface; SCROLLBAR-DARKSHADOW-COLOR: buttonface; SCROLLBAR-BASE-COLOR: buttonface; HEIGHT: 21px
+}
+.divtbborder {
+	BORDER-TOP: buttonshadow 1px solid; BORDER-BOTTOM: buttonshadow 1px solid
+}
+.divstatusbar {
+	MARGIN: 2px 8px; WIDTH: 100%; HEIGHT: 20px
+}
+.btn_colheadsort {
+font:12px;
+border:1px outset;
+padding:0px;
+width:100%;
+COLOR: #0f0f0f; HEIGHT: 21px; BACKGROUND-COLOR: buttonface; TEXT-ALIGN: left; TEXT-DECORATION: none;
+}
+.tbtitle {
+	TABLE-LAYOUT: fixed; FONT: 12px 宋体; WIDTH: 100%; HEIGHT: 21px; 
+}
+.tbcolhead {
+	BORDER-RIGHT: buttonface 1px solid; BORDER-BOTTOM: buttonface 1px solid;padding:2px;
+}
+.tbdata {
+	TABLE-LAYOUT: fixed; FONT: 12px 宋体; BORDER-LEFT: #cccccc 1px solid; WIDTH: 100%
+}
+.gopagebutton{font:11px arial;height:19px;width:30px;padding:0px;}
+.dialogBody{background-color:D0D0C8;padding:10px;}
+.botton1 {
+	height: 21px;
+	width: 73px;
+}
+.inset{
+    width:100%;
+    height:92%;
+    border:1px inset;
+    background-color:#ffffff;
+}.menuTitle {
+	font-size: 15px;
+	color: #FFFFFF;
+}
+.mainBg {
+	background-image: url(../images/bgmain.gif);
+	background-repeat: no-repeat;
+	background-position: left bottom;
+}
+table,br,select,input,tr,td,ul,li,form,p{font-size:9pt;font-family:verdana;}

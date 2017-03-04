@@ -1,0 +1,1946 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
+
+
+
+
+<link rel="stylesheet" type="text/css" href="../tongji/css/extremecomponents.css">
+<link href="../tongji/css/yanzhao.css" rel="stylesheet" type="text/css">
+<link type="text/css" rel="stylesheet" href="../tongji/css/kuangjia.css"/>
+<link type="text/css" rel="stylesheet" href="/css/jquery.ui.all.css" />
+<link href="/css/jquery.validate.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../tongji/js/jquery.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.validate.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.validate.messages_cn.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.ui.all.js"></script>
+
+
+
+<html>
+<head>
+<title>修改博士报名信息</title>
+<META http-equiv=Content-Type content="text/html; charset=utf-8">
+<link href="../tongji/css/style1216.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="../tongji/js/jquery.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.validate.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.validate.messages_cn.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.DatePicker.js"></script>
+<script type="text/javascript">
+
+var zsnd = "2017"; // 招生年度
+$(document).ready(function(){
+	var errorMsg = "";
+	
+	var value=$("#bklbm").val().substring(0,2);
+	if(value=='12'){
+		$(".dxwpdisplay").css('display','');
+	} else {
+		$(".dxwpdisplay").css('display','none');
+	}
+	
+	ksfsmChange();
+	kslyChange();
+	xlmInit();
+	xwmInit();
+
+	$.validator.addMethod("ifRequired",function(value, element, param) {
+		if(jQuery.inArray($("#"+param[0]).val(), param[1])>=0){
+			return $.trim(value).length > 0;
+		}
+		return true;
+	},$.validator.format("必选字段"));
+
+	$.validator.addMethod("noRequired",function(value, element, param) {
+		if(jQuery.inArray($("#"+param[0]).val(), param[1])<0){
+			return $.trim(value).length > 0;
+		}
+		return true;
+	},$.validator.format("必选字段"));
+	
+	jQuery.validator.addMethod("isDate", function(value, element){
+		var ereg = /^(\d{4})(-)([0]{1}\d{1})|([1]{1}[0-2]{1})$/;
+		var r = ereg.test(value);
+		if (value=='') {
+			return true;
+		}
+		return r;
+	}, "请输入正确的日期");
+	
+	jQuery.validator.addMethod("kslymCheck",function(value,elemnt){
+		var returnVal = true;
+		var kslym = $("#selectedKslymCode").val();
+		var ksfsm = $("#selectedKsfsmCode").val();
+		if((kslym==12 && ksfsm!=23)
+				|| (kslym!=12 && ksfsm==23)) {
+			errorMsg = "考生来源为“在学硕士”时,考试方式必须是硕博连读";
+			returnVal = false;
+		}
+		
+		if ((kslym==13 && ksfsm!=24)
+				|| (kslym!=13 && ksfsm==24)) {
+			errorMsg = "考生来源为“应届本科毕业生”时,考试方式必须是本科直博";
+			returnVal = false;
+		}
+		
+		$.validator.messages.kslymCheck = errorMsg;
+		return returnVal;
+	},""+errorMsg);
+	
+	jQuery.validator.addMethod("zcxhCheck", function(value, element){
+		var returnVal = true;
+		var kslym = $("#selectedKslymCode").val();
+		//考生来源 是“11:应届硕士毕业生”、“12:在学硕士”、“13:应届本科毕业生”时，在校生注册学号必填；
+		if(kslym==11 || kslym==12 || kslym==13){
+			if($.trim($("#zcxh").val())==''){
+				errorMsg = "在校生注册学号必填";
+				returnVal = false;
+			}
+			if (kslym==11) {
+				var spanCon = $("#jybxjzxyzbk").text();
+				if (spanCon.indexOf("请上传")>=0) {
+					alert("请上传《教育部学籍在线验证报告》!");
+					returnVal = false;
+				}
+			}
+		} else {
+			if($.trim($("#zcxh").val())!=''){
+				errorMsg = "在校生注册学号应为空";
+				returnVal = false;
+			}
+		}
+		
+		$.validator.messages.zcxhCheck = errorMsg;
+		return returnVal;
+	},""+errorMsg);
+	
+	jQuery.validator.addMethod("xlmCheck",function(value,elemnt){
+		var xlmCode = $("#xlmCode").val();
+		var kslym = $("#selectedKslymCode").val();
+		var ssxwfs = $.trim($("#ssxwfs").val());
+		if(kslym==11){
+			if(xlmCode!='2'){
+				$.validator.messages.xlmCheck = "考生来源为“应届硕士毕业生”时,必须是硕士研究生";
+				return false;
+			}
+		}
+		if (kslym==13) {
+			if (xlmCode!='3') {
+				$.validator.messages.xlmCheck = "考生来源为“应届本科毕业生”时,最后学历必须是大学本科生";
+				return false;
+			}
+		}
+		
+		if (ssxwfs=='2' && (xlmCode == '1' || xlmCode == '2')) {
+			$.validator.messages.xlmCheck = "获硕士学位方式为：非学历教育，那么，最后学历应为本科或本科以下";
+			return false;
+		}
+		
+		return true;
+	},""+errorMsg);
+	
+	jQuery.validator.addMethod("xwmCheck",function(value,elemnt) {
+		var xwmCode = $("#xwmCode").val().substring(0,1);
+		var kslym = $("#selectedKslymCode").val();
+		
+		if (!false) {
+			if(jQuery.inArray(kslym, ["11","12","13"])<0){
+				if(xwmCode=='0' || xwmCode=='4'){
+					$.validator.messages.xwmCheck = "非应届毕业生要求最后学位至少是硕士";
+					return false;
+				}
+			}
+		}
+		
+		if (kslym==13 && xwmCode!=4) {
+			$.validator.messages.xwmCheck = "本科直博考生，最后学位必须是学士学位";
+			return false;
+		}
+		
+		return true;
+	},""+errorMsg);
+	
+	jQuery.validator.addMethod("xsxwnyCheck", function(value, element){
+		var returnVal = true;
+		var xlm = $("#xlmCode").val();
+		var xwm = $("#xwmCode").val().substring(0,1);
+		var ksfsm = $("#selectedKsfsmCode").val();
+		var xsxwny = $("#xsxwny").val();
+		
+		if ( xlm!=4 && ksfsm!=24) {
+			if (xsxwny=='') {
+				errorMsg = "不能为空";
+				returnVal = false;
+			}
+		}
+		
+		if(xlm==3 && xwm==4 && ksfsm!=24 && ksfsm!=23){
+			if(parseInt(zsnd) - parseInt(xsxwny.substring(0,4)) < 6){
+				errorMsg = "同等学力考生获得学士学位后应工作满6年以上";
+				returnVal = false;
+			}
+		}
+		$.validator.messages.xsxwnyCheck = errorMsg;
+		return returnVal;
+	}, ""+errorMsg);
+	
+	jQuery.validator.addMethod("xsxwzsbhCheck", function(value, element){
+		var xlm = $("#xlmCode").val();
+		var xwm = $("#xwmCode").val().substring(0,1);
+		var ksfsm = $("#selectedKsfsmCode").val();
+		var xsxwzsbh = $("#xsxwzsbh").val();
+		if (xlm!=4) {
+			if (xsxwzsbh=='') {
+				$.validator.messages.xsxwzsbhCheck = "不能为空";
+				return false;
+			}
+		}
+
+		if (xwm=='4') {
+			var spanCon = $("#xsxwzssmj").text();
+			if (spanCon.indexOf("请上传")>=0) {
+				alert("请上传《学士学位证书》扫描件!");
+				returnVal = false;
+			}
+			
+			if (ksfsm!=23) {
+				var spanCon = $("#tdxlspbsmj").text();
+				if (spanCon.indexOf("请上传")>=0) {
+					alert("请上传《同济大学以同等学力报考博士研究生审批表》扫描件!");
+					returnVal = false;
+				}
+			}
+		}
+		
+		return true;
+	}, ""+errorMsg);
+	
+	jQuery.validator.addMethod("bkbynyCheck", function(value, element){
+		var returnVal = true;
+		var xlm = $("#xlmCode").val();
+		var bkbyny = $("#bkbyny").val();
+		
+		if (xlm!=4) {
+			if (bkbyny=='') {
+				$.validator.messages.bkbynyCheck = "不能为空";
+				return false;
+			}
+		}
+		return true;
+	}, ""+errorMsg);
+	
+	jQuery.validator.addMethod("ssxwfsCheck", function(value, element){
+		var returnVal = true;
+		var xlm = $("#xlmCode").val();
+		var xwm = $("#xwmCode").val().substring(0,1);
+		var ksfsm = $("#selectedKsfsmCode").val();
+		var ssxwfs = $("#ssxwfs").val();
+		if (xlm!=4 && xwm!=4 && ksfsm!=24) {
+			if (ssxwfs=='') {
+				$.validator.messages.ssxwfsCheck = "不能为空";
+				return false;
+			}
+		}
+		
+		return true;
+	}, ""+errorMsg);
+	
+	jQuery.validator.addMethod("ssxwlxCheck", function(value, element){
+		var returnVal = true;
+		var ssxwlx = $("#ssxwlx").val();
+		var xwm = $("#xwmCode").val();
+		var xwm1code = $("#xwmCode").val().substring(0,1);
+		if ((ssxwlx=='xs' && xwm.length!=3 && xwm!=900 && xwm1code!=4)
+				|| (ssxwlx=='zx' && xwm.length!=5 && xwm!=900 && xwm1code!=4)) {
+			errorMsg = "与【最后学位】不符";
+			returnVal = false;
+		}
+		
+		$.validator.messages.ssxwlxCheck = errorMsg;
+		return returnVal;
+	}, ""+errorMsg);
+	
+	jQuery.validator.addMethod("ssxwnyCheck", function(value, element){
+		var returnVal = true;
+		var xwm = $("#xwmCode").val().substring(0,1);
+		var ksfsm = $("#selectedKsfsmCode").val();
+		var kslym = $("#selectedKslymCode").val();
+		var ssxwny = $("#ssxwny").val();
+		if (xwm!=4) {
+			if (ssxwny=='') {
+				errorMsg = "不能为空";
+				returnVal = false;
+			}
+		}
+		
+		if(ksfsm!=23 && kslym==11 && zsnd != ssxwny.substring(0,4)){
+			errorMsg = "硕士学位年月的前4位必须与招生年度相同";
+			returnVal = false;
+		}
+		
+		$.validator.messages.ssxwnyCheck = errorMsg;
+		return returnVal;
+	}, ""+errorMsg);
+	
+	jQuery.validator.addMethod("ssxwzsbhCheck", function(value, element){
+		var returnVal = true;
+		var xwm = $("#xwmCode").val().substring(0,1);
+		var kslym = $("#selectedKslymCode").val();
+		var ksfsm = $("#selectedKsfsmCode").val();
+		var ssxwzsbh = $("#ssxwzsbh").val();
+		if (xwm!=4 && ksfsm!=23 && ksfsm!=24 && kslym!=11) {
+			if (ssxwzsbh=='') {
+				errorMsg = "不能为空";
+				returnVal = false;
+			}
+		}
+		
+		if (xwm=='3' && kslym!=11) {
+			var spanCon = $("#ssxwzssmj").text();
+			if (spanCon.indexOf("请上传")>=0) {
+				alert("请上传《硕士学位证书》扫描件!");
+				returnVal = false;
+			}
+		}
+		
+		if (xwm=='9') {
+			var spanCon = $("#jyblxfwzxrzs").text();
+			if (spanCon.indexOf("请上传")>=0) {
+				alert("请上传《教育部留学服务中心认证书》扫描件!");
+				returnVal = false;
+			}
+		}
+		
+		$.validator.messages.ssxwzsbhCheck = errorMsg;
+		return returnVal;
+	}, ""+errorMsg);
+	
+	jQuery.validator.addMethod("ssbynyCheck", function(value, element){
+		var xlm = $("#xlmCode").val();
+		var kslym = $("#selectedKslymCode").val();
+		var ksfsm = $("#selectedKsfsmCode").val();
+		var ssbyny=$("#ssbyny").val().substring(0,4);
+		var bkbyny=$("#bkbyny").val().substring(0,4);
+		
+		if (xlm!=3 && xlm!=4 && ksfsm!=24) {
+			if (ssbyny=='') {
+				$.validator.messages.ssbynyCheck = "不能为空";
+				return false;
+			}
+		}
+		
+		if(kslym==11 && zsnd != ssbyny){
+			$.validator.messages.ssbynyCheck = "硕士毕业年月的前4位必须与招生年度相同";
+			return false;
+		}
+		
+		if(bkbyny!='' && ssbyny!='' && ssbyny!='0000' && ssbyny-bkbyny<0){
+			$.validator.messages.ssbynyCheck = "硕士毕业年月应大于本科毕业年月";
+			return false;
+		}
+		
+		return true;
+	}, ""+errorMsg);
+	
+	jQuery.validator.addMethod("ssbyzsbhCheck", function(value, element){
+		var returnVal = true;
+		var xlm = $("#xlmCode").val();
+		var kslym = $("#selectedKslymCode").val();
+		var ksfsm = $("#selectedKsfsmCode").val();
+		var ssbyzsbh = $("#ssbyzsbh").val();
+		if (xlm!=3 && xlm!=4 && ksfsm!=23 && ksfsm!=24 && kslym!=11) {
+			if (ssbyzsbh=='') {
+				errorMsg = "不能为空";
+				returnVal = false;
+			}
+		}
+		
+		$.validator.messages.ssbyzsbhCheck = errorMsg;
+		return returnVal;
+	}, ""+errorMsg);
+	
+	//为inputForm注册validate函数
+	var signUpFormValidator =
+	$("#DoctorRecruitSignUpForm").validate({
+		onkeyup:false,
+		onclick:false,
+		onfocusout:false,
+		rules: {
+			"kslym":{required:true,kslymCheck:true},
+			"zcxh":{zcxhCheck:true},
+			"xlmCode":{required:true,xlmCheck:true},
+			"xwmCode":{required:true,xwmCheck:true},
+			"xsxwdw":{required:true},
+			"xsxwzymc":{required:true},
+			"xsxwny":{xsxwnyCheck:true},
+			"xsxwzsbh":{xsxwzsbhCheck:true},
+			"bkbydw":{required:true},
+			"bkbyzymc":{required:true},
+			"bkbyny":{bkbynyCheck:true},
+			"bkbyzsbh":{noRequired:["xlmCode",["4"]]},
+			"bkxxxs":{noRequired:["xlmCode",["4"]]},
+			"ssxwfs":{ssxwfsCheck:true},
+			"ssxwlx":{ssxwlxCheck:true},
+			"ssxwdw":{required:true},
+			"ssxwzymc":{required:true},
+			"ssxwny":{ssxwnyCheck:true},
+			"ssxwzsbh":{ssxwzsbhCheck:true},
+			"ssbydw":{required:true},
+			"ssbyzymc":{required:true},
+			"ssbyny":{ssbynyCheck:true},
+			"ssbyzsbh":{ssbyzsbhCheck:true},
+			"groupId":{ifRequired:["selectedKsfsmCode",["11"]]},
+			"dxwpdwszmc":{ifRequired:["selectedBklbmCode",["12"]]},
+			"dxwpdw":{ifRequired:["selectedBklbmCode",["12"]]},
+			"bkzydm":{required:true},
+			"bkyjfxm":{required:true},
+			"bkbdbh":{required:true},
+			"bklbm":{required:true}
+		}
+	});
+	
+	$("#save").click(function() {
+		var hasError = false;
+		var errors = {};
+		if(signUpFormValidator.form()){ //若验证通过，则调用保存/修改方法
+			var ksfsm = $("#selectedKsfsmCode").val();
+			var xlm = $("#xlmCode").val();
+			if(ksfsm==99){
+				//同等学力的验证问题，考生学位是硕士及其以上，无论最后学历是本科或本科以下都不算同等学力范围
+				if(xlm==3 && $("#xwmCode").val().substring(0,1) == '4'){
+	  				var bkbyny=$("#bkbyny").val().substring(0,4);
+					if((zsnd-bkbyny)<6){
+						hasError = true;
+						errors["bkbyny"] = "最后学历是大学本科时,考试方式必须为硕博连读或本科直博,或普通招考、申请审核且获得学士学位6年以上";
+					}
+	  			}
+			}
+	 	} else {
+				hasError = true;
+		}
+		if(errors.length>0 || hasError){
+			signUpFormValidator.showErrors(errors);
+			return false;
+		}
+		$("#DoctorRecruitSignUpForm").submit();
+	});
+	
+	function xlmInit(){
+		// 最后学历是  4.本科以下 无本科学历学位&硕士学历信息
+		if ($("#xlmCode").val() == '4') {
+			$(".xsxwxlxx").css({'display':'none'});
+			$(".xsxwInfo").css({'display':'none'});
+			$(".xsxlInfo").css({'display':'none'});
+			$(".ssxlInfo").css({'display':'none'});
+			
+			$(".ssxwxlxx").css({'display':''});
+			$(".ssswfs").css({'display':''});
+			$(".ssxwInfo").css({'display':''});
+			
+		// 最后学历是  3.大学本科,无硕士学历信息
+		} else if ($("#xlmCode").val() == '3') {
+			if ($("#selectedKsfsmCode").val() == '23') {
+				$(".ssxlInfo").css({'display':''});
+			} else {
+				$(".ssxlInfo").css({'display':'none'});
+			}
+			
+			$(".xsxwxlxx").css({'display':''});
+			$(".xsxwInfo").css({'display':''});
+			$(".xsxlInfo").css({'display':''});
+			$(".ssxwxlxx").css({'display':''});
+			$(".ssswfs").css({'display':''});
+			$(".ssxwInfo").css({'display':''});
+		// 最后学历是  2.硕士研究生,1.博士研究生
+		} else {
+			$(".xsxwxlxx").css({'display':''});
+			$(".xsxwInfo").css({'display':''});
+			$(".xsxlInfo").css({'display':''});
+			$(".ssxwxlxx").css({'display':''});
+			$(".ssswfs").css({'display':''});
+			$(".ssxwInfo").css({'display':''});
+			$(".ssxlInfo").css({'display':''});
+		}
+	}
+	
+	$("#xlmCode").change(function(){xlmChange();});
+	function xlmChange(){
+		// 最后学历是  4.本科以下 无本科学历学位&硕士学历信息
+		if ($("#xlmCode").val() == '4') {
+			$(".xsxwxlxx").css({'display':'none'});
+			$(".xsxwInfo").css({'display':'none'});
+			$(".xsxlInfo").css({'display':'none'});
+			$(".ssxlInfo").css({'display':'none'});
+			
+			$(".ssxwxlxx").css({'display':''});
+			$(".ssswfs").css({'display':''});
+			$(".ssxwInfo").css({'display':''});
+			
+			document.getElementById("xsxwdwm").value="00000";
+			document.getElementById("xsxwdw").value="无";
+			document.getElementById("xsxwzydm").value="000000";
+			document.getElementById("xsxwzymc").value="无";
+			document.getElementById("xsxwny").value="000000";
+			document.getElementById("xsxwzsbh").value="000000";
+			document.getElementById("bkbydwm").value="00000";
+			document.getElementById("bkbydw").value="无";
+			document.getElementById("bkbyzydm").value="000000";
+			document.getElementById("bkbyzymc").value="无";
+			document.getElementById("bkbyny").value = "000000";
+			document.getElementById("bkbyzsbh").value = "000000";
+			
+			$("#ssxwfs_2").attr("selected",true);
+			document.getElementById("ssbydwm").value="00000";
+			document.getElementById("ssbydw").value="无";
+			document.getElementById("ssbyzydm").value="000000";
+			document.getElementById("ssbyzymc").value="无";
+			document.getElementById("ssbyny").value = "000000";
+			document.getElementById("ssbyzsbh").value = "000000";
+			
+		// 最后学历是  3.大学本科,无硕士学历信息
+		} else if ($("#xlmCode").val() == '3') {
+			if ($("#selectedKsfsmCode").val() != '23') {
+				$(".ssxlInfo").css({'display':'none'});
+			} else {
+				$(".ssxlInfo").css({'display':''});
+			}
+			
+			$(".xsxwxlxx").css({'display':''});
+			$(".xsxwInfo").css({'display':''});
+			$(".xsxlInfo").css({'display':''});
+			$(".ssxwxlxx").css({'display':''});
+			$(".ssswfs").css({'display':''});
+			$(".ssxwInfo").css({'display':''});
+
+			if ($("#selectedKsfsmCode").val() != '23') {
+				document.getElementById("ssbydwm").value="00000";
+				document.getElementById("ssbydw").value="无";
+				document.getElementById("ssbyzydm").value="000000";
+				document.getElementById("ssbyzymc").value="无";
+				document.getElementById("ssbyny").value = "000000";
+				document.getElementById("ssbyzsbh").value = "000000";
+				$("#ssxwfs_2").attr("selected",true);
+			} else {
+				$("#ssxwfs_1").attr("selected",true);
+			}
+			
+		//  最后学历是  2.硕士研究生,1.博士研究生
+		} else {
+			$(".xsxwxlxx").css({'display':''});
+			$(".xsxwInfo").css({'display':''});
+			$(".xsxlInfo").css({'display':''});
+			$(".ssxwxlxx").css({'display':''});
+			$(".ssswfs").css({'display':''});
+			$(".ssxwInfo").css({'display':''});
+			$(".ssxlInfo").css({'display':''});
+		}
+	}
+	
+	function xwmInit() {
+		if ($("#xwmCode").val().substring(0,1) == '4') {
+			
+			if ($("#selectedKsfsmCode").val() != '23') {
+				$(".ssxwxlxx").css({'display':'none'});
+				$(".ssswfs").css({'display':'none'});
+				$(".ssxwInfo").css({'display':'none'});
+				$(".ssxlInfo").css({'display':'none'});
+			} else {
+				$(".ssxwxlxx").css({'display':''});
+				$(".ssswfs").css({'display':''});
+				$(".ssxwInfo").css({'display':''});
+				$(".ssxlInfo").css({'display':''});
+			}
+			
+			$(".xsxwxlxx").css({'display':''});
+			$(".xsxwInfo").css({'display':''});
+			$(".xsxlInfo").css({'display':''});
+			
+		} else if ($("#xwmCode").val().substring(0,1) != '4' && $("#xlmCode").val() == '4') {
+			$(".xsxwxlxx").css({'display':'none'});
+			$(".xsxwInfo").css({'display':'none'});
+			$(".xsxlInfo").css({'display':'none'});
+			$(".ssxlInfo").css({'display':'none'});
+			
+			$(".ssxwxlxx").css({'display':''});
+			$(".ssswfs").css({'display':''});
+			$(".ssxwInfo").css({'display':''});
+		} else {
+			$(".xsxwxlxx").css({'display':''});
+			$(".xsxwInfo").css({'display':''});
+			$(".xsxlInfo").css({'display':''});
+			$(".ssxwxlxx").css({'display':''});
+			$(".ssswfs").css({'display':''});
+			$(".ssxwInfo").css({'display':''});
+			$(".ssxlInfo").css({'display':''});
+		}
+	}
+	
+	$("#xwmc").focus(function(){
+		$("#xwmc").blur();
+		if ($("#xwmCode").val().substring(0,1) == '4') {
+			if ($("#selectedKsfsmCode").val() != '23') {
+				$(".ssxwxlxx").css({'display':'none'});
+				$(".ssswfs").css({'display':'none'});
+				$(".ssxwInfo").css({'display':'none'});
+				$(".ssxlInfo").css({'display':'none'});
+			} else {
+				$(".ssxwxlxx").css({'display':''});
+				$(".ssswfs").css({'display':''});
+				$(".ssxwInfo").css({'display':''});
+				$(".ssxlInfo").css({'display':''});
+			}
+			
+			$(".xsxwxlxx").css({'display':''});
+			$(".xsxwInfo").css({'display':''});
+			$(".xsxlInfo").css({'display':''});
+			
+			if ($("#selectedKsfsmCode").val() != '23') {
+				document.getElementById("ssxwdwm").value="00000";
+				document.getElementById("ssxwdw").value="无";
+				document.getElementById("ssxwzydm").value="000000";
+				document.getElementById("ssxwzymc").value="无";
+				document.getElementById("ssxwny").value = "000000";
+				
+				document.getElementById("ssbydwm").value="00000";
+				document.getElementById("ssbydw").value="无";
+				document.getElementById("ssbyzydm").value="000000";
+				document.getElementById("ssbyzymc").value="无";
+				document.getElementById("ssbyny").value = "000000";
+			}
+			document.getElementById("ssxwzsbh").value = "000000";
+			document.getElementById("ssbyzsbh").value = "000000";
+		} else if ($("#xwmCode").val().substring(0,1) != '4' && $("#xlmCode").val() == '4') {
+			$(".xsxwxlxx").css({'display':'none'});
+			$(".xsxwInfo").css({'display':'none'});
+			$(".xsxlInfo").css({'display':'none'});
+			$(".ssxlInfo").css({'display':'none'});
+			
+			$(".ssxwxlxx").css({'display':''});
+			$(".ssswfs").css({'display':''});
+			$(".ssxwInfo").css({'display':''});
+			
+			document.getElementById("xsxwdwm").value="00000";
+			document.getElementById("xsxwdw").value="无";
+			document.getElementById("xsxwzydm").value="000000";
+			document.getElementById("xsxwzymc").value="无";
+			document.getElementById("xsxwny").value="000000";
+			document.getElementById("xsxwzsbh").value="000000";
+			document.getElementById("bkbydwm").value="00000";
+			document.getElementById("bkbydw").value="无";
+			document.getElementById("bkbyzydm").value="000000";
+			document.getElementById("bkbyzymc").value="无";
+			document.getElementById("bkbyny").value = "000000";
+			document.getElementById("bkbyzsbh").value = "000000";
+			document.getElementById("bkxxxs").value = "6";
+			document.getElementById("ssbydwm").value="00000";
+			document.getElementById("ssbydw").value="无";
+			document.getElementById("ssbyzydm").value="000000";
+			document.getElementById("ssbyzymc").value="无";
+			document.getElementById("ssbyny").value = "000000";
+			document.getElementById("ssbyzsbh").value = "000000";
+			
+			$("#ssxwfs_2").attr("selected",true);
+		} else if ($("#xwmCode").val().substring(0,1) != '4' && $("#xlmCode").val() == '3') {
+			$(".ssxlInfo").css({'display':'none'});
+			
+			$(".xsxwxlxx").css({'display':''});
+			$(".xsxwInfo").css({'display':''});
+			$(".xsxlInfo").css({'display':''});
+			$(".ssxwxlxx").css({'display':''});
+			$(".ssswfs").css({'display':''});
+			$(".ssxwInfo").css({'display':''});
+			
+			document.getElementById("ssbydwm").value="00000";
+			document.getElementById("ssbydw").value="无";
+			document.getElementById("ssbyzydm").value="000000";
+			document.getElementById("ssbyzymc").value="无";
+			document.getElementById("ssbyny").value = "000000";
+			document.getElementById("ssbyzsbh").value = "000000";
+			
+			$("#ssxwfs_2").attr("selected",true);
+		} else {
+			$(".xsxwxlxx").css({'display':''});
+			$(".xsxwInfo").css({'display':''});
+			$(".xsxlInfo").css({'display':''});
+			$(".ssxwxlxx").css({'display':''});
+			$(".ssswfs").css({'display':''});
+			$(".ssxwInfo").css({'display':''});
+			$(".ssxlInfo").css({'display':''});
+		}
+	});
+	
+	function ksfsmChange(){
+		var ksfsm = $("#ksfsm").val().substring(0,2);
+		if(ksfsm=='23' || ksfsm=='24' || ksfsm=='99' || ksfsm=='98' || ksfsm=='97') {
+			$(".kskmdisplay").css({'display':'none'});
+		}
+		document.getElementById("selectedKsfsmCode").value=ksfsm;
+	}
+	
+	$('#xsxwny').datePicker({followOffset:[0, 24], altFormat : 'yyyymm', showMode : 1});
+	$('#bkbyny').datePicker({followOffset:[0, 24], altFormat : 'yyyymm', showMode : 1});
+	$('#ssxwny').datePicker({followOffset:[0, 24], altFormat : 'yyyymm', showMode : 1});
+	$('#ssbyny').datePicker({followOffset:[0, 24], altFormat : 'yyyymm', showMode : 1});
+	
+	$("#ssxwfs").change(function(){ssbyInfoHidden();});
+	function ssbyInfoHidden(){
+		var value = $("#ssxwfs").val();
+		if(value=='2'){
+			$(".ssxlInfo").css({'display':'none'});
+		} else {
+			$(".ssxlInfo").css({'display':''});
+		}
+	}
+	
+	$("#kslym").change(function(){kslyChange();});
+	function kslyChange(){
+		var kslym=$("#kslym").val().substring(0,2);
+		$("#selectedKslymCode").attr("value",kslym);
+		
+		if (kslym!='11' && kslym!='12' && kslym!='13') {
+			$("#zcxh").attr("value","");
+		}
+		
+		if (kslym=='11') {
+			$("#xlmCode").attr("value","2");
+			xlmChange();
+			$("#jybxjzxyzbk")[0].style.display = '';
+		} else {
+			$("#jybxjzxyzbk")[0].style.display = 'none';
+		}
+		
+		if (kslym=='12') {
+			$("#xlmCode").attr("value","3");
+			xlmChange();
+		}
+		
+		if (kslym=='13') {
+			$("#xlmCode").attr("value","3");
+			xlmChange();
+			$("#xsxwny").attr("value",2017+"07");
+			$("#xsxwzsbh").attr("value","000000");
+			$("#bkbyny").attr("value",2017+"07");
+			$("#bkbyzsbh").attr("value","000000");
+		}
+		
+		var xwm=$("#xwmCode").val().substring(0,1);
+		if ((kslym!='11' && kslym!='12' && kslym!='13') && xwm=='3') {
+			$("#ssxwzssmj")[0].style.display = '';
+		} else {
+			$("#ssxwzssmj")[0].style.display = 'none';
+		}
+		
+		var ksfsm = $("#selectedKsfsmCode").val();
+		if (xwm=='0') {
+			$("#xsxwzssmj")[0].style.display = 'none';
+			$("#tdxlspbsmj")[0].style.display = 'none';
+		} else if (xwm=='4') {
+			$("#xsxwzssmj")[0].style.display = '';
+			if (ksfsm!='23') {
+				$("#tdxlspbsmj")[0].style.display = '';
+			} else {
+				$("#tdxlspbsmj")[0].style.display = 'none';
+			}
+		} else {
+			$("#xsxwzssmj")[0].style.display = 'none';
+			if (ksfsm!='23') {
+				$("#tdxlspbsmj")[0].style.display = 'none';
+			} else {
+				$("#tdxlspbsmj")[0].style.display = '';
+			}
+		}
+		
+		if (xwm=='9') {
+			$("#jyblxfwzxrzs")[0].style.display = '';
+		} else {
+			$("#jyblxfwzxrzs")[0].style.display = 'none';
+		}
+	}
+	
+	$("#bklbm").change(function(){bklbmChange();});
+	
+	//报考类别为“定向就业”时，定向就业单位和定向就业单位所在地必填；
+	function bklbmChange(){
+		alert("报考类别一经提交将不得再更改，请确保填写正确！");
+		var value=$("#bklbm").val().substring(0,2);
+		if(value=='12'){
+			$(".dxwpdisplay").css('display','');
+		} else {
+			$(".dxwpdisplay").css('display','none');
+			document.getElementById('dxwpdwszdm').value="";
+			document.getElementById('dxwpdwszmc').value="";
+			document.getElementById('dxwpdw').value="";
+		}
+		document.getElementById("selectedBklbmCode").value=value;
+	}
+		
+	$("#kzy").click(function (){
+		if($("#kzy").attr("checked")){
+			$("#kzyxx").css({'display':'block'});
+		} else {
+			$("#kzyxx").css({'display':'none'});
+			if($("#kzycxxz")){
+				$("#kzycxxz").remove();
+			}
+			selExam($("#bkyjfxm").val());
+		}
+	});
+	
+	$("#kzycxxz").click(function(){
+		if($("#kzycxxz")){
+		$("#kzyxx").css({'display':'block'});
+		$("#kzycxxz").remove();
+		}
+	});
+	
+	// 选择学院
+	if(false){
+	$("#bkxydm").change(function(){
+		$("#bkzydm option").remove();
+		$("#bkyjfxm option").remove();
+		$("#bkbdbh option").remove();
+		document.getElementById('examGroup').innerHTML="";
+		var url = "drGetCourseByAcademy.do";
+		var textValue = $("#bkxydm").val();
+		var tutorid=$("#bkbdbh").val();
+		var tutorFirst=false;
+		var data = {bkxydm:textValue,tutorid:tutorid,tutorFirst:tutorFirst};
+		$.post(url,data,callback,'json');
+		function callback(data){
+			var courseStringArray = data.courseString;
+			for (var i=0;i<courseStringArray.length;i++){
+				var $option = $("<option></option>");
+				$option.attr("value", courseStringArray[i].courseId);
+				$option.text(courseStringArray[i].courseName);
+				$("#bkzydm").append($option);
+			}
+			var orienStringArray = data.orienString;
+			for (var i=0;i<orienStringArray.length;i++){
+				var $option = $("<option></option>");
+				$option.attr("value", orienStringArray[i].orienId);
+				$option.text(orienStringArray[i].orienName);
+				$("#bkyjfxm").append($option);
+			}
+			if(true){
+				var orienStringArray = data.tutorString;
+				for (var i=0;i<orienStringArray.length;i++){
+					var $option = $("<option></option>");
+					$option.attr("value", orienStringArray[i].tutorId);
+					$option.text(orienStringArray[i].tutorName);
+					$("#bkbdbh").append($option);
+				}
+			}
+			var examGroupStringArray=data.examGroupString;
+			var examGroup=document.getElementById('examGroup');
+			examGroup.innerHTML=''; 
+			if(examGroupStringArray.length>0) {
+				examGroup.innerHTML+='<input type=radio name=groupId checked="checked" value='+examGroupStringArray[0].examGroupId+'>'+examGroupStringArray[0].examGroupName+'<br/>';
+			}
+			for(var i=1;i<examGroupStringArray.length;i++) {
+				examGroup.innerHTML+='<input type=radio name=groupId value='+examGroupStringArray[i].examGroupId+'>'+examGroupStringArray[i].examGroupName+'<br/>';
+			}
+		}
+	});
+	}
+	
+	/** 选择专业 */
+	$("#bkzydm").change(function(){
+		$("#bkyjfxm option").remove();
+		$("#bkbdbh option").remove();
+		document.getElementById('examGroup').innerHTML="";
+		var url = "drGetRschorien.do";
+		var textValue = $("#bkzydm").val();
+		var tutorid=$("#bkbdbh").val();
+		var tutorFirst=false;
+		var data = {bkzydm:textValue,tutorid:tutorid,tutorFirst:tutorFirst};
+		$.post(url,data,callback,'json');
+		function callback(data){
+			var orienStringArray = data.orienString;
+			for (var i=0;i<orienStringArray.length;i++){
+				var $option = $("<option></option>");
+				$option.attr("value", orienStringArray[i].orienId);
+				$option.text(orienStringArray[i].orienName);
+				$("#bkyjfxm").append($option);
+			}
+
+			if(true){
+				var orienStringArray = data.tutorString;
+				for (var i=0;i<orienStringArray.length;i++){
+					var $option = $("<option></option>");
+					$option.attr("value", orienStringArray[i].tutorId);
+					$option.text(orienStringArray[i].tutorName);
+					$("#bkbdbh").append($option);
+				}
+			}
+			var examGroupStringArray=data.examGroupString;
+			var examGroup=document.getElementById('examGroup');
+			examGroup.innerHTML=''; 
+			if(examGroupStringArray.length>0) {
+				examGroup.innerHTML+='<input type=radio name=groupId checked="checked" value='+examGroupStringArray[0].examGroupId+'>'+examGroupStringArray[0].examGroupName+'<br/>';
+			}
+			for(var i=1;i<examGroupStringArray.length;i++) {
+				examGroup.innerHTML+='<input type=radio name=groupId value='+examGroupStringArray[i].examGroupId+'>'+examGroupStringArray[i].examGroupName+'<br/>';
+			}
+		}
+	});
+	
+	$("#bkyjfxm").change(function(){
+		$("#bkbdbh option").remove();
+		document.getElementById('examGroup').innerHTML="";
+		var url = "drGetTutor.do";
+		var textValue = $("#bkyjfxm").val();
+		var bkbdbh=$("#bkbdbh").val();
+		var data = {bkyjfxm:textValue,bkbdbh:bkbdbh};
+		$.post(url,data,callback,'json');
+		function callback(data){
+			if(true){
+				var orienStringArray = data.tutorString;
+				for (var i=0;i<orienStringArray.length;i++){
+					var $option = $("<option></option>");
+					$option.attr("value", orienStringArray[i].tutorId);
+					$option.text(orienStringArray[i].tutorName);
+					$("#bkbdbh").append($option);
+				}
+			}
+			
+			var examGroupStringArray=data.examGroupString;
+			var examGroup=document.getElementById('examGroup');
+			examGroup.innerHTML=''; 
+			if(examGroupStringArray.length>0){
+				examGroup.innerHTML+='<input type=radio name=groupId checked="checked" value='+examGroupStringArray[0].examGroupId+'>'+examGroupStringArray[0].examGroupName+'<br/>';
+			}
+			
+			for(var i=1;i<examGroupStringArray.length;i++){
+				examGroup.innerHTML+='<input type=radio name=groupId value='+examGroupStringArray[i].examGroupId+'>'+examGroupStringArray[i].examGroupName+'<br/>';
+			}
+		}
+	});
+	
+	if(false){
+		$("#bkxydm2").change(function(){
+			$("#bkzydm2 option").remove();
+			$("#bkyjfxm2 option").remove();
+			document.getElementById('examGroup').innerHTML="";
+			var url = "drGetCourseByAcademy.do";
+			var textValue = $("#bkxydm2").val();
+			var tutorid=$("#bkbdbh2").val();
+			var tutorFirst=false;
+			var data = {bkxydm:textValue,tutorid:tutorid,tutorFirst:tutorFirst};
+			$.post(url,data,callback,'json');
+			function callback(data){
+				var courseStringArray = data.courseString;
+				for (var i=0;i<courseStringArray.length;i++){
+					var $option = $("<option></option>");
+					$option.attr("value", courseStringArray[i].courseId);
+					$option.text(courseStringArray[i].courseName);
+					$("#bkzydm2").append($option);
+				}
+				var orienStringArray = data.orienString;
+				for (var i=0;i<orienStringArray.length;i++){
+					var $option = $("<option></option>");
+					$option.attr("value", orienStringArray[i].orienId);
+					$option.text(orienStringArray[i].orienName);
+					$("#bkyjfxm2").append($option);
+				}
+				if(true){
+					var orienStringArray = data.tutorString;
+					for (var i=0;i<orienStringArray.length;i++){
+						var $option = $("<option></option>");
+						$option.attr("value", orienStringArray[i].tutorId);
+						$option.text(orienStringArray[i].tutorName);
+						$("#bkbdbh2").append($option);
+					}
+				}
+				var examGroupStringArray=data.examGroupString;
+				var examGroup=document.getElementById('examGroup');
+				examGroup.innerHTML=''; 
+				if(examGroupStringArray.length>0) {
+					examGroup.innerHTML+='<input type=radio name=groupId checked="checked" value='+examGroupStringArray[0].examGroupId+'>'+examGroupStringArray[0].examGroupName+'<br/>';
+				}
+				for(var i=1;i<examGroupStringArray.length;i++) {
+					examGroup.innerHTML+='<input type=radio name=groupId value='+examGroupStringArray[i].examGroupId+'>'+examGroupStringArray[i].examGroupName+'<br/>';
+				};
+			};
+		});
+	}
+	
+	$("#bkzydm2").change(function(){
+		$("#bkyjfxm2 option").remove();
+		document.getElementById('examGroup').innerHTML="";
+		var url = "drGetRschorien.do";
+		var textValue = $("#bkzydm2").val();
+		var data = {bkzydm:textValue};
+		$.post(url,data,callback,'json');
+		function callback(data){
+			var orienStringArray = data.orienString;
+			for (var i=0;i<orienStringArray.length;i++){
+				var $option = $("<option></option>");
+				$option.attr("value", orienStringArray[i].orienId);
+				$option.text(orienStringArray[i].orienName);
+				$("#bkyjfxm2").append($option);
+			}
+			
+			var examGroupStringArray=data.examGroupString;
+			var examGroup=document.getElementById('examGroup');
+			examGroup.innerHTML=''; 
+			if(examGroupStringArray.length>0){
+				examGroup.innerHTML+='<input type=radio name=groupId checked="checked" value='+examGroupStringArray[0].examGroupId+'>'+examGroupStringArray[0].examGroupName+'<br/>';;
+			}
+			
+			for(var i=1;i<examGroupStringArray.length;i++){
+				examGroup.innerHTML+='<input type=radio name=groupId value='+examGroupStringArray[i].examGroupId+'>'+examGroupStringArray[i].examGroupName+'<br/>';;
+			};
+		};
+	});
+	
+	$("#bkyjfxm2").change(function(){
+		document.getElementById('examGroup').innerHTML="";
+		var url = "drGetTutor.do";
+		var textValue = $("#bkyjfxm").val();
+		var data = {bkyjfxm:textValue};
+		$.post(url,data,callback,'json');
+		function callback(data){
+			var examGroupStringArray=data.examGroupString;
+			var examGroup=document.getElementById('examGroup');
+			examGroup.innerHTML=''; 
+			if(examGroupStringArray.length>0){
+				examGroup.innerHTML+='<input type=radio name=groupId checked="checked" value='+examGroupStringArray[0].examGroupId+'>'+examGroupStringArray[0].examGroupName+'<br/>';
+			}
+			
+			for(var i=1;i<examGroupStringArray.length;i++){
+				examGroup.innerHTML+='<input type=radio name=groupId value='+examGroupStringArray[i].examGroupId+'>'+examGroupStringArray[i].examGroupName+'<br/>';
+			}
+		}
+	});
+
+	$("#bkbdxm").focus(function(){
+		$("#bkbdxm").blur();
+		var flag="0";
+		if(false){
+		$("bkxydm option").remove();
+			flag="1";
+		}
+		
+		$("#bkzydm option").remove();
+		$("#bkyjfxm option").remove();
+		var url = "drGetCourse.do";
+		var textValue = $("#bkbdbh").val();
+		var data = {bkbdbh:textValue,displayYxzy:flag};
+		$.post(url,data,callback,'json');
+		function callback(data){
+			if(false){
+				$("#bkxydm option").remove();
+				var academyStringArray = data.academyString;
+				for (var i=0;i<academyStringArray.length;i++){
+					var $option = $("<option></option>");
+					$option.attr("value", academyStringArray[i].academyId);
+					$option.text(academyStringArray[i].academyName);
+					$("#bkxydm").append($option);
+				}
+			}
+			
+			$("#bkzydm option").remove();
+			var orienStringArray = data.courseString;
+			for (var i=0;i<orienStringArray.length;i++){
+				var $option = $("<option></option>");
+				$option.attr("value", orienStringArray[i].courseId);
+				$option.text(orienStringArray[i].courseName);
+				$("#bkzydm").append($option);
+			}
+			
+			$("#bkyjfxm option").remove();
+			var orienStringArray = data.orienString;
+			for (var i=0;i<orienStringArray.length;i++){
+				var $option = $("<option></option>");
+				$option.attr("value", orienStringArray[i].orienId);
+				$option.text(orienStringArray[i].orienName);
+				$("#bkyjfxm").append($option);
+			}
+			
+			var examGroupStringArray=data.examGroupString;
+			var examGroup=document.getElementById('examGroup');
+			examGroup.innerHTML=''; 
+			if(examGroupStringArray.length>0){
+				examGroup.innerHTML+='<input type=radio name=groupId checked="checked" value='+examGroupStringArray[0].examGroupId+'>'+examGroupStringArray[0].examGroupName+'<br/>';;
+			}
+			
+			for(var i=1;i<examGroupStringArray.length;i++){
+				examGroup.innerHTML+='<input type=radio name=groupId value='+examGroupStringArray[i].examGroupId+'>'+examGroupStringArray[i].examGroupName+'<br/>';;
+			}
+		}
+	});
+	
+	$("#bkbdbh").change(function(){
+		document.getElementById('examGroup').innerHTML="";
+		var url = "drGetExamGroup.do";
+		var textValue = $("#bkbdbh").val();
+		var textValue1 = $("#bkyjfxm").val();
+		var data = {bkyjfxm:textValue1,bkbdbh:textValue};
+		$.post(url,data,callback,'json');
+		function callback(data){
+			var examGroupStringArray=data.examGroupString;
+			var examGroup=document.getElementById('examGroup');
+			examGroup.innerHTML=''; 
+			if(examGroupStringArray.length>0){
+				examGroup.innerHTML+='<input type=radio name=groupId checked="checked" value='+examGroupStringArray[0].examGroupId+'>'+examGroupStringArray[0].examGroupName+'<br/>';
+			}
+			
+			for(var i=1;i<examGroupStringArray.length;i++){
+				examGroup.innerHTML+='<input type=radio name=groupId value='+examGroupStringArray[i].examGroupId+'>'+examGroupStringArray[i].examGroupName+'<br/>';
+			}
+		}
+	});
+});
+
+//上传文件
+function ShowDialog(URL, Width, Height){
+	window.open(URL, '', 'height='+Height+', width='+Width+', top=0, lef t=0, toolbar=no, menubar=no, scrollbars=no,resizable=no,location=no, statu s=no');
+}
+
+function popUpWindow(URLStr, left, top, width, height){
+	window.open (URLStr, '', 'width='+width+',height='+height+',left='+left+', top='+top+', toolbar=no, menubar=no, scrollbars=yes, resizable=yes,location=no, status=no');
+}
+
+function processXwm(){
+	var xwm = $("#xwmCode").val().substring(0,1);
+	var kslym = $("#selectedKslymCode").val();
+	if (kslym!='11' && xwm=='3') {
+		$("#ssxwzssmj")[0].style.display = '';
+	} else {
+		$("#ssxwzssmj")[0].style.display = 'none';
+	}
+	
+	var ksfsm = $("#selectedKsfsmCode").val();
+	if (xwm=='0') {
+		$("#xsxwzssmj")[0].style.display = 'none';
+		$("#tdxlspbsmj")[0].style.display = 'none';
+	} else if (xwm=='4') {
+		$("#xsxwzssmj")[0].style.display = '';
+		if (ksfsm!='23') {
+			$("#tdxlspbsmj")[0].style.display = '';
+		} else {
+			$("#tdxlspbsmj")[0].style.display = 'none';
+		}
+	} else {
+		$("#xsxwzssmj")[0].style.display = 'none';
+		if (ksfsm!='23') {
+			$("#tdxlspbsmj")[0].style.display = 'none';
+		} else {
+			$("#tdxlspbsmj")[0].style.display = '';
+		}
+	}
+	
+	if (xwm=='9') {
+		$("#jyblxfwzxrzs")[0].style.display = '';
+	} else {
+		$("#jyblxfwzxrzs")[0].style.display = 'none';
+	}
+}
+
+function processXsxw(){
+	if(document.getElementById("xsxwdw").value=="无"){
+		document.getElementById("xsxwzydm").value="000000";
+		document.getElementById("xsxwzymc").value="无";
+		document.getElementById("xsxwny").value="000000";
+		document.getElementById("xsxwzsbh").value="000000";
+	}
+}
+
+function processBkby(){
+	if(document.getElementById("bkbydw").value=="无"){
+		document.getElementById("bkbyzydm").value="000000";
+		document.getElementById("bkbyzymc").value="无";
+		document.getElementById("bkbyny").value="000000";
+		document.getElementById("bkbyzsbh").value="000000";
+		document.getElementById("bkxxxs").value="6";
+	}
+}
+
+function processSsxwdw(){
+	if(document.getElementById("ssxwdw").value=="无"){
+		document.getElementById("ssxwzydm").value="000000";
+		document.getElementById("ssxwzymc").value="无";
+		document.getElementById("ssxwny").value="000000";
+		document.getElementById("ssxwzsbh").value="000000";
+	}
+}
+
+function processSsbydw(){
+	if(document.getElementById("ssbydw").value=="无"){
+		document.getElementById("ssbyzydm").value="000000";
+		document.getElementById("ssbyzymc").value="无";
+		document.getElementById("ssbyny").value="000000";
+		document.getElementById("ssbyzsbh").value="000000";
+	}
+}
+
+</script>
+</head>
+
+<body>
+	<div class="contop">
+		<div class="main">
+			<div class="mainbox">
+				<form enctype="multipart/form-data" id="DoctorRecruitSignUpForm" name="DoctorRecruitSignUpForm" action="saveDoctorExamineApplyDegreeInfo.do" method="post">
+				<table cellpadding="0" cellspacing="0" border="0" width="95%" class="box_table" align="center">
+					<tr>
+						<td colspan="5" align="center">以下信息必须完整填写，如果填写信息与真实信息有误会直接影响到考生本人的报考或录取</td>
+					</tr>
+					
+						
+					
+					<tr>
+						<td class="tdleft">考生来源：</td>
+						<td>
+							<select id="kslym" name="kslym">
+								<option value="">--请选择--</option>
+								
+									<option value="11#207ec7b8-f980-459c-a855-ac574a570aa9"  >
+										11|应届硕士毕业生
+									</option>
+								
+									<option value="12#ff84183d-2582-4c30-8665-89f8502fa0a9"  >
+										12|在学硕士(指提前攻博和硕博连读考生）
+									</option>
+								
+									<option value="13#43805f0c-dbe1-4e3b-bc00-55f73b48d817"  >
+										13|应届本科毕业生(指本科直博考生)
+									</option>
+								
+									<option value="20#1607b682-a355-4c18-8270-29b79a701400"  >
+										20|未就业人员
+									</option>
+								
+									<option value="31#d0a3c259-0554-4d9e-af52-6edcb414b93e"  >
+										31|科学研究人员
+									</option>
+								
+									<option value="32#f3af5fc0-2f9a-4564-bf04-0ef7262fa6c5"  >
+										32|其他专业技术人员
+									</option>
+								
+									<option value="33#5f5764c5-8982-4d2c-958f-6d15ba8f1a83" selected >
+										33|高等教育教师
+									</option>
+								
+									<option value="34#e18b362c-0604-4ad3-a0db-d9efb9c3e322"  >
+										34|其他教学人员
+									</option>
+								
+									<option value="35#51f0f170-fe60-4751-891b-03e24414356f"  >
+										35|行政办公人员
+									</option>
+								
+									<option value="36#dbd6ab7c-0be9-4a41-9087-4eb70bb8836e"  >
+										36|商业、服务业人员
+									</option>
+								
+									<option value="40#5871d7e8-dcbc-4c24-855f-99ec84a8ff3c"  >
+										40|其他在职人员
+									</option>
+								
+							</select>
+							<input type="hidden" value="33" id="selectedKslymCode" name="selectedKslymCode" />
+						</td>
+						<td class="tdleft">在校生注册学号：</td>
+						<td colspan="2">
+							<input type="text" name="zcxh" id="zcxh" size="20" value="" maxlength="18">
+							<span id="jybxjzxyzbk" style="display: none">
+							
+								请上传《教育部学籍在线验证报告》，
+								<a style="color: blue;" onClick="ShowDialog('showDoctorFileUploadDialog.do?type=jybxjzxyzbk&zjhm=430421197206142537',400,200)">上传</a>
+							
+							
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td class="tdleft">最后学历：</td>
+						<td>
+							<select name="xlmCode" id="xlmCode" style="width: 168px;">
+								<option value="">--请选择--</option>
+								
+									<option value="1"  >
+										1|博士研究生
+									</option>
+								
+									<option value="2" selected >
+										2|硕士研究生
+									</option>
+								
+									<option value="3"  >
+										3|大学本科生
+									</option>
+								
+									<option value="4"  >
+										4|本科以下
+									</option>
+								
+							</select>
+						</td>
+						<td class="tdleft">最后学位：</td>
+						<td colspan="2">
+							<input id="xwmId" name="xwmId" type="hidden" value="48539481-f432-4fe0-a4c9-a4c47b9c15d5" />
+							<input id="xwmCode" name="xwmCode" type="hidden" value="308" />
+							<input id="xwmName" name="xwmName" type="text" readonly="readonly" size="20" value="工学硕士学位">
+							<label><a id="selDegree" href="javascript:popUpWindow('drSelDegree.do?id=xwmId&name=xwmName&code=xwmCode&kslym='+$('#selectedKslymCode').val()+'&callback=processXwm',400,100,500,500);">选择学位</a></label>
+						</td>
+					</tr>
+					<tr class="trbg01 xsxwxlxx">
+						<th colspan="5" class="tdleft" height="28"><font size="3">学士学位学历信息</font></th>
+					</tr>
+					<tr class="trbg01 xsxwInfo">
+						<td class="tdleft">获学士学位单位：</td>
+						<td>
+							<input type="hidden" name="xsxwdwm" id="xsxwdwm" size="20" value="10542"> 
+							<input type="text" name="xsxwdw" id="xsxwdw" size="20" value="湖南师范大学"
+							readonly="readonly"><font color="red">*</font> 
+							<label><a href="javascript:popUpWindow('drSelGraduateUnit.do?name=xsxwdw&Id=xsxwdwm&callback=processXsxw',400,100,500,500);">选择单位</a></label>
+						</td>
+						<td class="tdleft">获学士学位专业：</td>
+						<td colspan="2">
+							<input type="hidden" name="xsxwzydm" id="xsxwzydm" value="070101" />
+							<input type="text" name="xsxwzymc" id="xsxwzymc" size="20" value="数学与应用数学" readonly="readonly">
+							<label><a href="javascript:popUpWindow('drSelGraduateSpecialty.do?name=xsxwzymc&Id=xsxwzydm',400,100,500,500);">选择专业</a></label>
+						</td>
+					</tr>
+					<tr  class="trbg01 xsxwInfo">
+						<td class="tdleft">获学士学位年月：</td>
+						<td>
+							<input type="text" name="xsxwny" id="xsxwny" value="199507" readonly="readonly">(YYYYMM)
+						</td>
+						<td class="tdleft">学士学位证书编号：</td>
+						<td colspan="2">
+							<input type="text" name="xsxwzsbh" id="xsxwzsbh" size="20" value="000" maxlength="20">
+							<span id="xsxwzssmj" style="display: none"><br>
+							
+								请上传《学士学位证书》扫描件，
+								<a style="color: blue;" onClick="ShowDialog('showDoctorFileUploadDialog.do?type=xsxwzssmj&zjhm=430421197206142537',400,200)">上传</a>
+							
+							
+							</span>
+							<span id="tdxlspbsmj" style="display: none"><br>
+							
+								请上传《同济大学以同等学力报考博士研究生审批表》扫描件，
+								<a style="color: blue;" onClick="ShowDialog('showDoctorFileUploadDialog.do?type=tdxlspbsmj&zjhm=430421197206142537',400,200)">上传</a>
+							
+							
+							</span>
+						</td>
+					</tr>
+					<tr class="trbg01 xsxlInfo">
+						<td class="tdleft">本科毕业单位名称：</td>
+						<td>
+							<input type="hidden" name="bkbydwm" id="bkbydwm" size="20" value="10542">
+							<input type="text" name="bkbydw" id="bkbydw" size="20" value="湖南师范大学" readonly="readonly"><font color="red">*</font> 
+							<label><a href="javascript:popUpWindow('drSelGraduateUnit.do?name=bkbydw&Id=bkbydwm&callback=processBkby',400,100,500,500);">选择单位</a></label>
+						</td>
+						<td class="tdleft">本科毕业专业名称：</td>
+						<td colspan="2">
+							<input type="hidden" name="bkbyzydm" id="bkbyzydm" value="070101" readonly="readonly"/>
+							<input type="text" name="bkbyzymc" id="bkbyzymc" size="20" value="数学与应用数学" readonly="readonly"><font color="red">*</font>
+							<label><a href="javascript:popUpWindow('drSelGraduateSpecialty.do?name=bkbyzymc&Id=bkbyzydm',400,100,500,500);">选择专业</a></label>
+						</td>
+					</tr>
+					<tr class="trbg01 xsxlInfo">
+						<td class="tdleft">本科毕业年月：</td>
+						<td>
+							<input type="text" name="bkbyny" id="bkbyny" value="199507" readonly="readonly">(YYYYMM)
+						</td>
+						<td class="tdleft">本科毕业证书编号：</td>
+						<td colspan="2">
+							<input type="text" name="bkbyzsbh" id="bkbyzsbh" size="20" value="000" maxlength="18">
+						</td>
+					</tr>
+					<tr class="trbg01 xsxlInfo">
+						<td class="tdleft">取得本科学历的学习形式：</td>
+						<td colspan="4">
+							<label> 
+							<select name="bkxxxs" id="bkxxxs" style="width: 168px;">
+								<option value="">--请选择--</option>
+								
+									<option value="1" selected >
+										1|普通全日制
+									</option>
+								
+									<option value="2"  >
+										2|成人教育
+									</option>
+								
+									<option value="3"  >
+										3|自学考试
+									</option>
+								
+									<option value="4"  >
+										4|网络教育
+									</option>
+								
+									<option value="5"  >
+										5|获境外学历或学位证书者
+									</option>
+								
+									<option value="6"  >
+										6|其他
+									</option>
+								
+							</select> 
+							</label>
+						</td>
+					</tr>
+					
+					<tr class="trbg01 ssxwxlxx">
+						<th colspan="5" class="tdleft" height="28"><font size="3">硕士学位学历信息</font></th>
+					</tr>
+					<tr class="trbg01 ssswfs">
+						<td class="tdleft">获硕士学位方式：</td>
+						<td >
+							<select name="ssxwfs" id="ssxwfs" style="width: 168px;">
+								<option value="">--请选择--</option>
+								
+									<option id="ssxwfs_1" value="1" selected >
+										1|学历教育
+									</option>
+								
+									<option id="ssxwfs_2" value="2"  >
+										2|非学历教育
+									</option>
+								
+							</select>
+						</td>
+						<td class="tdleft">硕士学位类型：</td>
+						<td colspan="2">
+							<select name="ssxwlx" id="ssxwlx" style="width: 168px;">
+								<option value="">--请选择--</option>
+								
+									<option value="xs" selected >
+										xs|学术型
+									</option>
+								
+									<option value="zx"  >
+										zx|专业学位
+									</option>
+								
+							</select>
+						</td>
+					</tr>
+					<tr class="trbg01 ssxwInfo">
+						<td class="tdleft">获硕士学位的单位名称：</td>
+						<td>
+							<input type="hidden" name="ssxwdwm" id="ssxwdwm" size="20" value="10286"> 
+							<input type="text" name="ssxwdw" id="ssxwdw" size="20" value="东南大学" readonly="readonly">
+							<label><a href="javascript:popUpWindow('drSelEnrolmentDept.do?name=ssxwdw&Id=ssxwdwm&callback=processSsxwdw',400,100,500,500);">选择单位</a></label>
+						</td>
+						<td class="tdleft">获硕士学位专业名称：</td>
+						<td colspan="2">
+							<input type="hidden" name="ssxwzydm" id="ssxwzydm" value="081101" /> 
+							<input type="text" name="ssxwzymc" id="ssxwzymc" size="20" value="控制理论与控制工程" readonly="readonly">
+							<label><a href="javascript:popUpWindow('drSelSpecialty.do?name=ssxwzymc&Id=ssxwzydm&ssxwlx='+$('#ssxwlx').val(),400,100,500,500);">选择专业</a></label>
+						</td>
+					</tr>
+					<tr class="trbg01 ssxwInfo">
+						<td class="tdleft">获硕士学位年月：</td>
+						<td>
+							<input type="text" name="ssxwny" id="ssxwny" value="200103" readonly="readonly">(YYYYMM)
+						</td>
+						<td class="tdleft">硕士学位证书编号：</td>
+						<td colspan="2">
+							<input type="text" name="ssxwzsbh" id="ssxwzsbh" size="20" value="102863010206" maxlength="20"/>
+							<span id="ssxwzssmj" style="display: none">
+							
+							
+								已上传《硕士学位证书》扫描件，
+								<a style="color: blue;" onClick="ShowDialog('showDoctorFileUploadDialog.do?type=ssxwzssmj&zjhm=430421197206142537',400,200)">重传，</a>
+								<a style="color: blue;text-decoration: none" target="_blank"
+									href="/MISPackWeb/10247/GSOA_DoctorExamineApplyManage/DoctorExamApplyJpgFile/ssxwzssmj/430421197206142537.jpg" >查看</a>。
+							
+							</span>
+							<span id="jyblxfwzxrzs" style="display: none"><br>
+							
+								请上传《教育部留学服务中心认证书》扫描件，
+								<a style="color: blue;" onClick="ShowDialog('showDoctorFileUploadDialog.do?type=jyblxfwzxrzs&zjhm=430421197206142537',400,200)">上传</a>
+							
+							
+							</span>
+						</td>
+					</tr>
+					<tr class="trbg01 ssxlInfo">
+						<td class="tdleft">硕士毕业单位名称：</td>
+						<td>
+							<input type="hidden" name="ssbydwm" id="ssbydwm" size="20" value="10286"> 
+							<input type="text" name="ssbydw" id="ssbydw" size="20" value="东南大学" readonly="readonly"> 
+							<label><a href="javascript:popUpWindow('drSelEnrolmentDept.do?name=ssbydw&Id=ssbydwm&callback=processSsbydw',400,100,500,500);">选择单位</a></label>
+						</td>
+						<td class="tdleft">硕士毕业专业名称：</td>
+						<td>
+							<input type="hidden" name="ssbyzydm" id="ssbyzydm" value="081101" /> 
+							<input type="text" name="ssbyzymc" id="ssbyzymc" size="20" value="控制理论与控制工程" readonly="readonly">
+							<label><a href="javascript:popUpWindow('drSelSpecialty.do?name=ssbyzymc&Id=ssbyzydm&ssxwlx='+$('#ssxwlx').val(),400,100,500,500);">选择专业</a></label>
+						</td>
+					</tr>
+					<tr class="trbg01 ssxlInfo">
+						<td class="tdleft">硕士毕业年月：</td>
+						<td>
+							<input type="text" name="ssbyny" id="ssbyny" value="200105" readonly="readonly">(YYYYMM)
+						</td>
+						<td class="tdleft">硕士毕业证书编号：</td>
+						<td>
+							<input type="text" name="ssbyzsbh" id="ssbyzsbh" size="20" value="10286120010200215" maxlength="18">
+							若没有硕士毕业证书编号请填写：000000
+						</td>
+					</tr>
+					<tr class="trbg01 ssxlInfo">
+						<td class="tdleft">硕士毕业论文题目：</td>
+						<td colspan="3">
+							<input type="text" name="ssbylwtm" id="ssbylwtm" value="" size="55" maxlength="50">
+						</td>
+					</tr>
+					<tr class="trbg01 ssxlInfo">
+						<td class="tdleft">硕士指导教师姓名：</td>
+						<td>
+							<input type="text" name="sszdjsxm" id="sszdjsxm" value="田玉平" size="20" maxlength="20">
+						</td>
+						<td class="tdleft">硕士指导教师职称：</td>
+						<td colspan="2">
+							<input type="text" name="sszdjszc" id="sszdjszc" value="博士生导师" size="20" maxlength="20">
+						</td>
+					</tr>
+					
+					<tr>
+						<th colspan="5" class="tdleft" height="28"><font size="3">报考信息</font></th>
+					</tr>
+					<tr>
+						<td class="tdleft">考试方式：</td>
+						<td colspan="4">
+						
+						<input type="hidden" value="11" id="selectedKsfsmCode" name="selectedKsfsmCode" />
+						普通招考
+						<input type="hidden" name="ksfsm" id="ksfsm" value="11#a4e272bf-af7d-4ab8-876f-11a93d7cc1e3" />
+						
+							&nbsp;&nbsp;&nbsp;&nbsp;
+							<input id="sqzgsh" name="sqzgsh" type="checkbox" value="true"  />申请资格审核
+						
+						</td>
+					</tr>
+					<tr>
+						
+							<td class="tdleft">报考专业：</td>
+							<td colspan="4"
+							 >
+							
+							
+							<select id="bkzydm" name="bkzydm">
+								<option value="">--请选择--</option>
+									
+										<option value="cc54f4a8-5b93-49ba-824d-74c2a2280910" >(081300)建筑学|建筑与城市规划学院</option>
+									
+										<option value="a23b9f8f-9e39-448a-b4fd-e26b4725f0e0" >(083300)城乡规划学|建筑与城市规划学院</option>
+									
+										<option value="df9e5dff-70c3-4a92-8d7e-236eda8560bb" >(083400)风景园林学|建筑与城市规划学院</option>
+									
+										<option value="ce10aebd-f07a-4054-b147-17cc54a2e06a" >(081400)土木工程|土木工程学院</option>
+									
+										<option value="21ae40bb-9046-42d9-9292-185b4cd4e8e0" >(081803)地质工程|土木工程学院</option>
+									
+										<option value="30f43ec3-36cf-486f-8a57-8b4788f437ae" >(080200)机械工程|机械与能源工程学院</option>
+									
+										<option value="b860d13e-ce11-4d14-b0fc-5b6736130c83" >(0802Z1)工业工程|机械与能源工程学院</option>
+									
+										<option value="a1f592a2-dbdd-44b6-b1d4-07668eabbb9a" >(080702)热能工程|机械与能源工程学院</option>
+									
+										<option value="ba04cba7-c665-4a3f-bcd7-02d29e1b2cee" >(081404)供热、供燃气、通风及空调工程|机械与能源工程学院</option>
+									
+										<option value="65feca4a-3f73-4b32-a0a7-0601728ac9e3" >(020200)应用经济学|经济与管理学院</option>
+									
+										<option value="39be431e-db93-4182-a459-5f6bc896f081" >(120100)管理科学与工程|经济与管理学院</option>
+									
+										<option value="8d15e688-0268-4c5b-8992-db7df9e4993b" >(120200)工商管理|经济与管理学院</option>
+									
+										<option value="9206f21c-d049-4e1a-915c-4cd5c633a8a2" >(081403)市政工程|环境科学与工程学院</option>
+									
+										<option value="9ab28103-fb83-4b34-86ff-068003c1b57a" >(083000)环境科学与工程|环境科学与工程学院</option>
+									
+										<option value="8923069a-2887-4f8b-bd6a-412b923dd938" >(080500)材料科学与工程|材料科学与工程学院</option>
+									
+										<option value="ea098e6a-15d2-4dd8-a0db-2ab988e203c3" selected>(081100)控制科学与工程|电子与信息工程学院</option>
+									
+										<option value="4e6cbfad-8c13-4792-bc46-8b677a048f95" >(081200)计算机科学与技术|电子与信息工程学院</option>
+									
+										<option value="f3f2f67c-fbef-4097-87ba-b5bb9c2e6777" >(050201)英语语言文学|外国语学院</option>
+									
+										<option value="67936f5d-2ecb-4374-839d-1bb2b9d2f20b" >(050204)德语语言文学|外国语学院</option>
+									
+										<option value="2f31b210-cf66-4e49-a100-da62fcfe352c" >(050205)日语语言文学|外国语学院</option>
+									
+										<option value="02bf59d7-07f6-4d6b-9a51-27b2d044aab6" >(050211)外国语言学及应用语言学|外国语学院</option>
+									
+										<option value="6bf12e82-79a0-426c-80fa-c2579691dad5" >(080100)力学|航空航天与力学学院</option>
+									
+										<option value="709b0915-6ffc-49eb-94dd-5cd0a6d9042e" >(070100)数学|数学科学学院</option>
+									
+										<option value="5c99bebc-1bab-4525-887e-682b4604865b" >(070200)物理学|物理科学与工程学院</option>
+									
+										<option value="fd784722-41eb-4710-9ad4-db14c1c8f3f0" >(070300)化学|化学科学与工程学院</option>
+									
+										<option value="953939e7-3746-47d7-9d84-b1b9a2229976" >(100200)临床医学|医学院</option>
+									
+										<option value="b6493721-b500-4fcd-95c1-3d68b55a2cb6" >(100201)内科学|医学院</option>
+									
+										<option value="cd45287b-c1af-4f86-9fe2-32a12adba40d" >(100202)儿科学|医学院</option>
+									
+										<option value="bba08010-a74d-4ee2-aa47-eefd2b75aba5" >(100204)神经病学|医学院</option>
+									
+										<option value="e3b7107e-9284-4898-8d01-c3e7dff1cf8a" >(100205)精神病与精神卫生学|医学院</option>
+									
+										<option value="322cb589-95a0-4c82-a25d-d722d1e203ae" >(100206)皮肤病与性病学|医学院</option>
+									
+										<option value="acb729e5-0b5e-45fe-a4fb-aa59f871ceac" >(100207)影像医学与核医学|医学院</option>
+									
+										<option value="0259e958-bdd8-49fc-8156-1e384bc69a04" >(100208)临床检验诊断学|医学院</option>
+									
+										<option value="a086dc60-d7fa-47cf-bd96-614eb0734329" >(100210)外科学|医学院</option>
+									
+										<option value="bb9cfc78-8b4b-4419-aad4-6f34a2a79c0b" >(100211)妇产科学|医学院</option>
+									
+										<option value="27608e86-4e6c-4072-b834-d0e6f3eed90b" >(100212)眼科学|医学院</option>
+									
+										<option value="0000a694-f3a0-412e-b12b-a160d7e7c0f1" >(100213)耳鼻咽喉科学|医学院</option>
+									
+										<option value="330ae34a-2d4d-448e-a471-b0405ca30b6d" >(100214)肿瘤学|医学院</option>
+									
+										<option value="8ae24317-cfff-49f1-af29-81ccd61a1e13" >(100215)康复医学与理疗学|医学院</option>
+									
+										<option value="ecf977c4-c126-4b28-b2c1-001085e7cb7b" >(100217)麻醉学|医学院</option>
+									
+										<option value="d431e56d-a043-4874-8016-ed26f0fbf920" >(100218)急诊医学|医学院</option>
+									
+										<option value="e499fc21-1cda-43e0-b065-0884deae6cf5" >(105101)内科学|医学院</option>
+									
+										<option value="a17dcda5-242d-4e60-a9c7-6fd0a4af5fa9" >(105102)儿科学|医学院</option>
+									
+										<option value="8c369b38-2af4-44af-92d4-967ad6a58575" >(105104)神经病学|医学院</option>
+									
+										<option value="e969577f-a5da-4d0f-9cf9-a699a7e6c49c" >(105105)精神病与精神卫生学|医学院</option>
+									
+										<option value="9820e7a0-f270-4c91-abc1-f5065d63cd1a" >(105106)皮肤病与性病学|医学院</option>
+									
+										<option value="d4cb76f1-5cef-451d-8bd3-2b0171d31e2d" >(105107)影像医学与核医学|医学院</option>
+									
+										<option value="fd6c2d10-ec2e-452c-a2eb-68b45b15136c" >(105108)临床检验诊断学|医学院</option>
+									
+										<option value="c8c72f2f-61a3-438c-b988-d083424347fa" >(105109)外科学|医学院</option>
+									
+										<option value="464d3bed-3a47-4849-a8fa-b6d0d203876e" >(105110)妇产科学|医学院</option>
+									
+										<option value="5441b979-cf4d-4520-9bed-705d22887f99" >(105111)眼科学|医学院</option>
+									
+										<option value="1037cbe3-f0b4-41a7-a57a-8f0af4d20d41" >(105112)耳鼻咽喉科学|医学院</option>
+									
+										<option value="d48c7315-c4f3-4b32-9683-31dda8cc837a" >(105113)肿瘤学|医学院</option>
+									
+										<option value="8ae8cb19-212c-420a-963f-bd99ba58ae79" >(105114)康复医学与理疗学|医学院</option>
+									
+										<option value="ecde4ed2-657f-485d-abaf-5ef6c989d97a" >(105116)麻醉学|医学院</option>
+									
+										<option value="fec053d2-9e61-4c4b-acd6-3e8406fc0878" >(105117)急诊医学|医学院</option>
+									
+										<option value="f84d8c30-ad12-4843-9a84-ff05ea5dfcce" >(100301)口腔基础医学|口腔医学院</option>
+									
+										<option value="41b27026-2080-4609-af7d-91f73bb40051" >(100302)口腔临床医学|口腔医学院</option>
+									
+										<option value="541261aa-28fd-4e05-b9f7-4a53915fcb87" >(105200)口腔医学|口腔医学院</option>
+									
+										<option value="ca9f28c8-a715-4e7c-aec2-02fabe2b478e" >(082300)交通运输工程|交通运输工程学院</option>
+									
+										<option value="317d62e6-b486-4710-8f6a-ea3f09d7d045" >(080204)车辆工程|铁道与城市轨道交通研究院</option>
+									
+										<option value="87684fcc-d2ed-47c5-bd13-d5a158d58e0a" >(082304)载运工具运用工程|铁道与城市轨道交通研究院</option>
+									
+										<option value="ba6c0570-1cb5-409c-a3c8-2408696b1d25" >(071000)生物学|生命科学与技术学院</option>
+									
+										<option value="148c2eb2-302e-43fc-af2f-88c1f0a97173" >(083500)软件工程|软件学院</option>
+									
+										<option value="331e6786-192f-4c23-ba18-1b51ebab551d" >(080204)车辆工程|汽车学院</option>
+									
+										<option value="0c936726-2a51-499a-ab43-dadf11824615" >(080703)动力机械及工程|汽车学院</option>
+									
+										<option value="ce86f489-4697-4187-95e5-54536e8791e3" >(070700)海洋科学|海洋与地球科学学院</option>
+									
+										<option value="d2429f24-9871-4a41-b9a7-b5f99f47218f" >(070800)地球物理学|海洋与地球科学学院</option>
+									
+										<option value="54ab6a4d-82df-44e7-a8cc-043e95f1aeb8" >(010100)哲学|人文学院</option>
+									
+										<option value="838291e7-7f99-45d3-97a6-cac7e1520d02" >(030501)马克思主义基本原理|马克思主义学院</option>
+									
+										<option value="10412282-ed6b-48de-8bf3-aa5b5f7b995b" >(030505)思想政治教育|马克思主义学院</option>
+									
+										<option value="d566b479-7513-41c3-8a89-b8c916d10bb0" >(087200)设计学|设计创意学院</option>
+									
+										<option value="98ea409f-6b04-4d1b-b1a8-b0570bf0c231" >(130500)设计学|设计创意学院</option>
+									
+										<option value="fa4f6360-f140-4323-bae9-78add800ca04" >(081600)测绘科学与技术|测绘与地理信息学院</option>
+									
+							</select>
+							
+							<font color="red">*</font></td>
+						</tr>
+						<tr>
+							<td class="tdleft">研究方向：</td>
+							<td >
+								<select id="bkyjfxm" name="bkyjfxm">
+								<option value="">--请选择--</option>
+									
+										<option value="5744c4d2-9ea0-43c6-83f2-62ca77977d0e" selected>01 控制理论与控制工程</option>
+									
+										<option value="4de40d2f-f552-46c5-a435-ed7773c05906" >02 检测技术与自动化装置</option>
+									
+										<option value="f0b0214d-2909-4f3b-a457-16b2f22244ad" >03 系统工程</option>
+									
+										<option value="a8cc6ba3-2433-4dbd-a80f-6d06808a5755" >04 模式识别与智能系统</option>
+									
+								</select>
+							</td>
+							
+								<td class="tdleft">报考导师：</td>
+								<td colspan="2">
+									<select id=bkbdbh name=bkbdbh>
+										<option value="">--请选择--</option>
+										
+											<option value="deba3887-7850-4647-bce0-2cf5a59ddb31" > 刘富强
+												(02112)
+											</option>
+										
+											<option value="5ac4cc06-9da9-41f5-8220-440a28cbf390" > 王中杰
+												(02138)
+											</option>
+										
+											<option value="c1d4f66f-f20b-41ed-bc34-794d9075f1d1" > 郭爱煌
+												(02170)
+											</option>
+										
+											<option value="2f844bc0-88a0-497f-a6eb-e84590dabb54" > 林峰
+												(02996)
+											</option>
+										
+											<option value="8f2bd146-b26e-42d2-bb2c-d847963f27f8" > 赵晓群
+												(03218)
+											</option>
+										
+											<option value="de5fdf2c-cea2-4443-b557-a4bc249a5a78" > 何斌
+												(03225)
+											</option>
+										
+											<option value="8e1ae228-93d5-4ca7-96f8-e0a447967b25" > 李莉
+												(05006)
+											</option>
+										
+											<option value="1fd30bc2-3696-4333-ae38-6d32494b8634" > 王祝萍
+												(07012)
+											</option>
+										
+											<option value="558b2502-3cbe-4523-81b9-d0c4f04f52ad" selected> 张皓
+												(07102)
+											</option>
+										
+											<option value="0011feb8-e04b-48ae-8da8-691f6c655a76" > 朱芳来
+												(07108)
+											</option>
+										
+											<option value="d7770495-69d6-4873-ac7a-d3bd9d53532e" > 康琦
+												(09046)
+											</option>
+										
+											<option value="4073729b-0082-45bc-ba6e-ba648e67dbfa" > 王峻
+												(10027)
+											</option>
+										
+											<option value="64e8e8d3-0d2c-40aa-b8e3-c2f5cbda4c2e" > 童美松
+												(10136)
+											</option>
+										
+											<option value="731ac291-9241-46df-b5b6-503c7ce34e69" > 刘儿兀
+												(11054)
+											</option>
+										
+											<option value="16b6fb3d-e157-4afc-a5fb-6dc696a38bd7" > 沈润杰
+												(11132)
+											</option>
+										
+											<option value="ad06f447-48df-43d1-863e-f852e52c361f" > 林济铿
+												(13115)
+											</option>
+										
+											<option value="d351ff73-1cc8-4f11-849d-e506c859a6fd" > 吴江枫
+												(16002)
+											</option>
+										
+											<option value="aef58177-fc39-4891-85fb-a7ec95e3b5ed" > 吴启迪
+												(86042)
+											</option>
+										
+											<option value="1455ac63-a5d8-4a42-a517-aa2dec37585c" > 张浩
+												(90026)
+											</option>
+										
+											<option value="55f579ab-2323-4736-ab9f-daba117d30d7" > 陈启军
+												(90055)
+											</option>
+										
+											<option value="9d537883-d572-40f4-9154-36b7b71b880a" > 肖辉
+												(92193)
+											</option>
+										
+											<option value="86ee3b30-5e95-4dd9-b666-eaf35b48a427" > 康劲松
+												(94762)
+											</option>
+										
+											<option value="ea47527c-884a-430c-9519-9afd55776c0d" > 许维胜
+												(96018)
+											</option>
+										
+											<option value="b20a45ff-9080-4b19-a6ba-e66289ad7186" > 徐立鸿
+												(97101)
+											</option>
+										
+											<option value="8c78d365-972a-441d-b7e4-54e431ae0d2a" > 胡宗福
+												(97784)
+											</option>
+										
+											<option value="11edcb84-5c46-4bf1-89e3-828ba7e77dd0" > 汪镭
+												(98102)
+											</option>
+										
+									</select><font color="red">*</font> 
+									<input type="hidden" name="bkbdxm" id="bkbdxm" value="" />
+									
+								</td>
+							
+						</tr>
+						
+						<tr class="trbg01 kskmdisplay">
+							<td class="tdleft">考试科目分组：</td>
+							<td colspan="4">
+								<div id="examGroup">
+									
+										<input type="radio" id="groupId" name="groupId" value="48f4b766-b8c0-4404-bfdb-9a6af7e93ef9" >
+										1001|英语,2012|数值分析,3037|控制科学与工程学科综合
+										<br>
+									
+										<input type="radio" id="groupId" name="groupId" value="82f5c396-9f68-4bbc-a7b3-bc4c0935e6c1" checked>
+										1001|英语,2021|线性系统理论,3037|控制科学与工程学科综合
+										<br>
+									
+										<input type="radio" id="groupId" name="groupId" value="37014c6e-4a4e-4fa4-9b19-967727a1dd53" >
+										1001|英语,2022|数学基础,3037|控制科学与工程学科综合
+										<br>
+									
+										<input type="radio" id="groupId" name="groupId" value="b8e23d54-9518-4175-ae1a-b8dfdfac7d55" >
+										1001|英语,2024|算法设计与分析,3037|控制科学与工程学科综合
+										<br>
+									
+										<input type="radio" id="groupId" name="groupId" value="022c353b-67e8-49a6-b554-5a2fe6b0228b" >
+										1001|英语,2029|数理方程,3037|控制科学与工程学科综合
+										<br>
+									
+										<input type="radio" id="groupId" name="groupId" value="666ece65-968b-435b-bfa4-fa162760b0ee" >
+										1004|德语,2012|数值分析,3037|控制科学与工程学科综合
+										<br>
+									
+										<input type="radio" id="groupId" name="groupId" value="bbd841b8-cf35-46cd-925d-5e01ddb2fffd" >
+										1004|德语,2021|线性系统理论,3037|控制科学与工程学科综合
+										<br>
+									
+										<input type="radio" id="groupId" name="groupId" value="ef975ac8-1b59-4efd-ba3c-716cc55967f3" >
+										1004|德语,2022|数学基础,3037|控制科学与工程学科综合
+										<br>
+									
+										<input type="radio" id="groupId" name="groupId" value="e7cc078d-1804-4042-88bd-9f70117b9b63" >
+										1004|德语,2024|算法设计与分析,3037|控制科学与工程学科综合
+										<br>
+									
+										<input type="radio" id="groupId" name="groupId" value="13715e53-f086-423c-9394-b09c83731882" >
+										1004|德语,2029|数理方程,3037|控制科学与工程学科综合
+										<br>
+									
+									
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td class="tdleft">专项计划：</td>
+							<td>
+								<select id="zxjh" name="zxjh">
+									
+										<option value="bszxjh_0" selected >
+											0|无
+										</option>
+									
+										<option value="bszxjh_4"  >
+											4|少数民族骨干计划
+										</option>
+									
+										<option value="bszxjh_5"  >
+											5|高校辅导员专项
+										</option>
+									
+										<option value="bszxjh_6"  >
+											6|两课教师专项
+										</option>
+									
+								</select>
+							</td>
+							<td class="tdleft">报考类别：</td>
+							<td colspan="2">
+								<select id="bklbm" name="bklbm">
+									<option value="">--请选择--</option>
+									
+										<option value="11#5abe8206-a2d4-48ed-a7e7-049322e58f84"  >
+											11|非定向就业
+										</option>
+									
+										<option value="12#6982a765-455e-49b9-8037-64664a3f1c2d" selected >
+											12|定向就业
+										</option>
+									
+								</select> 
+								<input type="hidden" value="12" id="selectedBklbmCode" name="selectedBklbmCode" />
+							</td>
+						</tr>
+						<tr class="trbg01 dxwpdisplay">
+							<td class="tdleft">定向就业所在地：</td>
+							<td>
+								<input type="text" name="dxwpdwszmc" id="dxwpdwszmc" readonly="readonly" value="江苏省|无锡市|宜兴市"  /> 
+								<input type=hidden size="20" name="dxwpdwszdm" id="dxwpdwszdm" value="320282"> 
+								<label><a href="javascript:popUpWindow('drSelRegionlism.do?name=dxwpdwszmc&Id=dxwpdwszdm',400,100,500,500);">选择地点</a></label>
+							</td>
+							<td class="tdleft">定向就业单位：</td>
+							<td colspan="2">
+								<input type=text size="20" name="dxwpdw" id="dxwpdw" value="无锡工艺职业技术学院" maxlength="60">
+							</td>
+						</tr>
+				</table>
+				<div class=div_BottomBar>
+					<input type="hidden" id="schoolCode" name="schoolCode" value="10247">
+					<input type="hidden" id="pay" name="pay" value="false">
+					<input type="hidden" id="bmh" name="bmh" value="">
+					<input type="hidden" id="bmhi" name="bmhi" value="0">
+					<input type="hidden" id="remark" name="remark" value="">
+					<input type="hidden" id="isAuditing" name="isAuditing" value="0">
+					<input type="hidden" id="displayBmh" name="displayBmh" value="false">
+					<input type="hidden" id="wsjf" name="wsjf" value="true">
+					<input type="hidden" name="csrq" id="csrq" value="19720614"/>
+					<input type="hidden" name="subType" id="subType" value="save">
+					
+					<!-- 变更记录用字段 变更前 -->
+					<input type="hidden" id="bef_dxwpdwszdm" name="bef_dxwpdwszdm" value="江苏省|无锡市|宜兴市">
+					<input type="hidden" id="bef_dxwpdw" name="bef_dxwpdw" value="无锡工艺职业技术学院">
+					
+					<div align="center">
+						<input type="button" value="上一步" name="last" id="last" onclick="window.location.href='editDoctorExamineApply.do?id=ff808081588598b90158b0af6d590b2a'">
+						<input type="button" value="下一步" name="save" id="save">
+					</div>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

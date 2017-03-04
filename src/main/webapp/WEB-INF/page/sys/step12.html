@@ -1,0 +1,505 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
+
+
+
+
+<link rel="stylesheet" type="text/css" href="../tongji/css/extremecomponents.css">
+<link href="../tongji/css/yanzhao.css" rel="stylesheet" type="text/css">
+<link type="text/css" rel="stylesheet" href="../tongji/css/kuangjia.css"/>
+<link type="text/css" rel="stylesheet" href="/css/jquery.ui.all.css" />
+<link href="/css/jquery.validate.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../tongji/js/jquery.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.validate.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.validate.messages_cn.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.ui.all.js"></script>
+
+
+
+<html>
+<head>
+<title>修改博士报名信息</title>
+<META http-equiv=Content-Type content="text/html; charset=utf-8">
+<link href="../tongji/css/style1216.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="../tongji/js/jquery.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.validate.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.validate.messages_cn.js"></script>
+<script type="text/javascript" src="../tongji/js/jquery.DatePicker.js"></script>
+<script type="text/javascript">
+var zsnd = "2017";
+$(document).ready(function(){
+	jQuery.validator.addMethod("xmpyCheck", function(value, element){
+		value=value.replace(/[a-z]/g,'');
+		if (value == null||value=='') {
+			return true;
+		}
+		return this.optional(element);
+	}, "只能输入小写字母");
+	jQuery.validator.addMethod("csrqCheck", function(value, element){
+		var zjhm=$("#zjhm").val();
+		var csrq=$("#csrq").val();
+		var zjhmCsrq;
+		if($.trim($("#zjhm").val()).length==18){
+			zjhmCsrq=zjhm.substring(6,14);
+		}else if($.trim($("#zjhm").val()).length==15){
+			zjhmCsrq=zjhm.substring(6,12);
+			var zjhmYY=zjhmCsrq.substring(0,2);
+			if(zjhmYY>=20){
+				zjhmCsrq="19"+zjhmCsrq;
+			}else{
+				zjhmCsrq="20"+zjhmCsrq;
+			}
+		}else{
+			return true;
+		}
+		if(zjhmCsrq==csrq){
+			return true;
+		}
+		return false;
+	}, "出生日期与身份证不符");
+	
+	jQuery.validator.addMethod("hasPhoto", function(value, element){
+		if(!true && $("#photoFileId").val().length==0){
+			 return false;
+		}
+		return true;
+	},"请上传数码相片");
+	
+	jQuery.validator.addMethod("photoCheck", function(value, element){
+		if($("#photoFileId").val().length!=0){
+			var vfile=document.getElementById("photoFileId").value;
+			if((vfile.toLowerCase().lastIndexOf('.jpg')==-1 &&
+					vfile.toLowerCase().lastIndexOf('.gif')==-1 &&
+					vfile.toLowerCase().lastIndexOf('.png')==-1) ||
+					((vfile.length!=vfile.toLowerCase().lastIndexOf('.jpg')+4) &&
+							(vfile.length!=vfile.toLowerCase().lastIndexOf('.gif')+4) &&
+							(vfile.length!=vfile.toLowerCase().lastIndexOf('.png')+4))){
+				return false;
+			}
+		}
+		return true;
+	},"上传的数码相片格式不正确");
+	//为inputForm注册validate函数
+	var signUpFormValidator =
+	$("#DoctorRecruitSignUpForm").validate({
+		onkeyup:false,
+		onclick:false,
+		onfocusout:false,
+		rules: {
+			"xm":{required:true,maxlength:20},//姓名
+			"xmpy":{required:true,xmpyCheck:true,maxlength:40}, //姓名拼音
+			"xbm":{required:true},//性别
+			"mzm":{required:true},//民族
+			"csrq": {required:true,csrqCheck:true},//出生日期
+			"hfm":{required:true},//婚否
+			"zzmmm":{required:true},//政治面貌
+			"csdm": {required:true},//出生地
+			"jgdm":{required:true},//籍贯不能为空
+			"zjhm":{required:true},//证件号码
+			"xxgzdw":{required:true,maxlength:30},//现学习或工作单位
+			"xxgzdwxz":{required:true},//现在学习工作单位性质
+			"photoFileId":{hasPhoto:true,photoCheck:true}//照片
+		}
+	});
+	
+	$("#save").click(function() {
+		var hasError = false;
+		var errors = {};
+		if(signUpFormValidator.form()){
+			var wysp = $("#wysp").val();
+			var wysptgsj = $("#wysptgsj").val();
+			var reg = /^\d{4}-([0]{1}[1-9]{1})|([1]{1}[0-2]{1})$/;
+			if(wysp == '无'){
+				var wyspcj = $("#wyspcj").val();
+				if (wyspcj.length > 0) {
+					hasError = true;
+					errors["wyspcj"] = "外语水平为'无'时，应为空";
+				}
+				
+				if(wysptgsj.length > 0){
+					hasError = true;
+					errors["wysptgsj"] = "外语水平为'无'时，应为空";
+				}
+			}else{
+				if(!reg.test(wysptgsj)){
+					hasError = true;
+					errors["wysptgsj"] = "请输入正确的日期";
+				}
+			}
+		}
+		if(errors.length>0 || hasError){
+			signUpFormValidator.showErrors(errors);
+			return false;
+		}
+	 	$("#DoctorRecruitSignUpForm").submit();
+	});
+	
+	$('#csrq').datePicker({followOffset:[0, 24], altFormat : 'yyyymmdd'});
+});
+function popUpWindow(URLStr, left, top, width, height)
+{
+	window.open (URLStr, '', 'width='+width+',height='+height+',left='+left+', top='+top+', toolbar=no, menubar=no, scrollbars=yes, resizable=yes,location=no, status=no');
+}
+function ShowDialog(URL, Width, Height){
+	window.open(URL, '', 'height='+Height+', width='+Width+', top=0, lef t=0, toolbar=no, menubar=no, scrollbars=no,resizable=no,location=no, statu s=no');
+}
+</script>
+</head>
+
+<body>
+	<div class="contop">
+		<div class="main">
+			<div class="mainbox">
+				<form enctype="multipart/form-data" id="DoctorRecruitSignUpForm" name="DoctorRecruitSignUpForm" action="saveDoctorExamineApplyBasicInfo.do" method="post">
+				<table cellpadding="0" cellspacing="0" border="0" width="95%" class="box_table" align="center">
+				<tr>
+					<td colspan="5" align="center">以下信息必须完整填写，如果填写信息与真实信息有误会直接影响到考生本人的报考或录取</td>
+				</tr>
+				
+					
+				
+				
+				<tr>
+					<th colspan="5" class="tdleft" height="28"><font size="3">考生基本信息</font></th>
+				</tr>
+				<tr>
+					<td width="15%" class="tdleft">考生姓名：</td>
+					<td width="30%"><input size="30" name="xm" value="何英高" /><font color="red">*</font></td>
+					<td width="15%" class="tdleft">姓名拼音：</td>
+					<td width="30%"><input size="30" name="xmpy" value="heyinggao" /><font color="red">*</font></td>
+					<td rowspan="7" align="center" valign="middle">
+						照片(规格：150X200)：<br />
+						
+							<img class="img_css" src='/MISPackWeb/10247/GSOA_DoctorExamineApplyManage/DoctorExamApplyImg/430421197206142537.jpg?temp=0.39357822239355655' name="Photo" id="Photo" width="150" height="200"/><br/>
+						 
+						 
+						<input name="photoFileId" type="hidden" id="photoFileId" value=""/>
+						<a style="color: blue" href="#" class="aOption" onclick="ShowDialog('showDoctorPhotoUploadDialog.do',500,200)">更改照片<font color="red">*</font></a>
+					</td>
+				</tr>
+				<tr>
+					<td class="tdleft">证件类型：</td>
+					<td>
+					
+					居民身份证<input name="zjlx" type="hidden" id="zjlx" value="3c1dfe09-ef3c-44ff-b03e-851366f4ccf9">
+					
+					
+					</td>
+					<td class="tdleft">证件号码：</td>
+					<td>
+						430421197206142537<input size="20" name="zjhm" id="zjhm" value="430421197206142537" maxlength="18" type="hidden"/>
+					</td>
+				</tr>
+				<tr>
+					<td class="tdleft">性别：</td>
+					<td>
+						<select id=xbm name=xbm>
+							<option value="">--请选择--</option>
+							
+								<option value="5e1807dd-be33-4bc3-ac93-c3891e4b80dd" selected>男</option>
+							
+								<option value="c5b3f6dd-7f7d-473e-a577-1c807cebdc0e" >女</option>
+							
+						</select>
+					</td>
+					<td class="tdleft">民族：</td>
+					<td>
+						<select id=mzm name=mzm>
+							<option value="">--请选择--</option>
+							
+								<option value="292f1821-6a07-4f3b-875e-8a6537659835#汉族" selected >汉族</option>
+							
+								<option value="b620d82d-a1a9-428f-9970-bc4455f38a1e#蒙古族"  >蒙古族</option>
+							
+								<option value="bd9b828c-c472-4640-a7ac-d6a1755078af#回族"  >回族</option>
+							
+								<option value="0ac35aa4-a8d7-4ab0-a52b-317f2add69ae#藏族"  >藏族</option>
+							
+								<option value="8c3bfe42-bab1-4773-a998-92e8ba883989#维吾尔族"  >维吾尔族</option>
+							
+								<option value="f33a00af-cece-47ad-af61-7208cd4c618d#苗族"  >苗族</option>
+							
+								<option value="587158a9-8d25-42f4-a948-8d809a4bf793#彝族"  >彝族</option>
+							
+								<option value="cb5f2077-afc7-4b28-b8cb-0e5b8c63f3ce#壮族"  >壮族</option>
+							
+								<option value="926f5f49-6c8f-4718-baf2-11ebc337cd5d#布依族"  >布依族</option>
+							
+								<option value="e7f64cf2-1c00-4cec-9937-e9ad49babda9#朝鲜族"  >朝鲜族</option>
+							
+								<option value="cb025f7d-d53b-4393-9f75-4fa67edfda6f#满族"  >满族</option>
+							
+								<option value="f29e5d99-d326-43d8-aac3-5d3fda1ea544#侗族"  >侗族</option>
+							
+								<option value="b3f0d816-3c28-49c2-8ad5-b98b6abcd2b9#瑶族"  >瑶族</option>
+							
+								<option value="ca986098-b0c6-483b-860f-5fdd3b848fa6#白族"  >白族</option>
+							
+								<option value="3352147c-d1ce-44c7-9a0b-a47e2e7badce#土家族"  >土家族</option>
+							
+								<option value="9e5e6b84-a640-4a1d-aefa-8511aca82b78#哈尼族"  >哈尼族</option>
+							
+								<option value="4170d5b4-e255-4ba0-90d0-4ef35a5727ed#哈萨克族"  >哈萨克族</option>
+							
+								<option value="b4efbe12-96ec-42a7-bc08-5a28588fd07e#傣族"  >傣族</option>
+							
+								<option value="9e093604-9b42-4e06-9aef-7e5b196c69d4#黎族"  >黎族</option>
+							
+								<option value="f564af80-47b5-44ef-be8e-3129ae1fbe1c#傈僳族"  >傈僳族</option>
+							
+								<option value="b0c74215-4195-44d6-90cc-3a7da406e30e#佤族"  >佤族</option>
+							
+								<option value="d88e46e2-6490-4e8e-9053-0d9b697b64e2#畲族"  >畲族</option>
+							
+								<option value="55ede082-9f83-4cad-b416-f6b114abe4ae#高山族"  >高山族</option>
+							
+								<option value="e81463e9-6ca8-4c8d-8bd8-aaf2f4119740#拉祜族"  >拉祜族</option>
+							
+								<option value="d8c5181e-4cb6-4a7f-93ca-421050d0333c#水族"  >水族</option>
+							
+								<option value="ccd217f9-ec47-43b2-92bd-8d0b87549785#东乡族"  >东乡族</option>
+							
+								<option value="cbe2296d-890f-4b09-9e3d-059fc6990737#纳西族"  >纳西族</option>
+							
+								<option value="e69da86b-7463-49ef-be57-8c0b43c872c4#景颇族"  >景颇族</option>
+							
+								<option value="1617e390-bfc5-4c14-953f-5301437c81b6#柯尔克孜族"  >柯尔克孜族</option>
+							
+								<option value="f5444654-78c1-461c-ad8f-3bc89abf4680#土族"  >土族</option>
+							
+								<option value="3b565d3f-bcbb-44fa-b830-8c0b4c0cc03f#达斡尔族"  >达斡尔族</option>
+							
+								<option value="91d5b298-4dec-4000-a8b0-f8ceb04e313d#仫佬族"  >仫佬族</option>
+							
+								<option value="833b4da4-7f7f-4d82-bd30-a196e0c82e3a#羌族"  >羌族</option>
+							
+								<option value="5f0cc77e-280a-4bfe-a827-5b12a2327fd6#布朗族"  >布朗族</option>
+							
+								<option value="054276f0-a075-4733-aba3-51a3388762a6#撒拉族"  >撒拉族</option>
+							
+								<option value="72f18748-1a21-4906-b6b0-75f097770db9#毛南族"  >毛南族</option>
+							
+								<option value="2d5d30ff-b398-4437-b116-b968f43e04ed#仡佬族"  >仡佬族</option>
+							
+								<option value="f9ae2406-3d3f-46de-835f-0d3f7d96e9ee#锡伯族"  >锡伯族</option>
+							
+								<option value="0d5dee0e-205d-4cc3-8e59-3f97cc242f1b#阿昌族"  >阿昌族</option>
+							
+								<option value="6b1d2e8f-6c0b-46db-a060-83730b1c2773#普米族"  >普米族</option>
+							
+								<option value="0d5ac84e-8d5c-4057-9034-92a15d94bbad#塔吉克族"  >塔吉克族</option>
+							
+								<option value="954f9940-90ca-4ce3-8c47-9ccd94c1186d#怒族"  >怒族</option>
+							
+								<option value="e7849379-48dc-4a70-87e4-b0120ac966b7#乌孜别克"  >乌孜别克</option>
+							
+								<option value="34ec8a46-3fcf-43f5-ac7d-0b68b5160db8#俄罗斯族"  >俄罗斯族</option>
+							
+								<option value="aebad44d-a3b3-4106-8993-aee89a43691b#鄂温克族"  >鄂温克族</option>
+							
+								<option value="043d3879-1d36-4fec-b983-9befa3e34641#德昂族"  >德昂族</option>
+							
+								<option value="86c15550-229a-4e13-ad12-164c7dc4559e#保安族"  >保安族</option>
+							
+								<option value="8b8f9f0f-7e3e-4561-ad46-be7a78271340#裕固族"  >裕固族</option>
+							
+								<option value="767014d3-65b7-4ae0-9f42-388a96687e02#京族"  >京族</option>
+							
+								<option value="3a7502ac-cde7-4efe-84b2-f449766c02bf#塔塔尔族"  >塔塔尔族</option>
+							
+								<option value="7fdc8de2-8a16-4cf8-8c41-ebf3cadb9e21#独龙族"  >独龙族</option>
+							
+								<option value="d56a1761-e52f-46d0-ac56-9831bef62ebc#鄂伦春族"  >鄂伦春族</option>
+							
+								<option value="68e08a2c-5b7d-4085-acd5-b4aa7d4ac76b#赫哲族"  >赫哲族</option>
+							
+								<option value="0fea4898-5322-4e03-bff4-06f8f6520706#门巴族"  >门巴族</option>
+							
+								<option value="4baa9399-4c6b-4b47-b5b9-46967c724501#珞巴族"  >珞巴族</option>
+							
+								<option value="6920b0a2-f58b-406a-9b51-97469fbd759e#基诺族"  >基诺族</option>
+							
+								<option value="9c905273-c938-4610-853a-963e03e10a5a#其他"  >其他</option>
+							
+								<option value="5c14bac9-105b-4fda-99d3-2a296b88f29e#外国血统"  >外国血统</option>
+							
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td class="tdleft">出生日期：</td>
+					<td>
+						<input type="text" name="csrq" id="csrq" value="19720614" size="20" readonly="readonly">(YYYYMMDD)
+					</td>
+					<td class="tdleft">现役军人：</td>
+					<td>
+						<select id=xyjrm name=xyjrm>
+							
+								<option value="bsxyjrm_0" selected >非军人</option>
+							
+								<option value="bsxyjrm_1"  >军队在职干部</option>
+							
+								<option value="bsxyjrm_2"  >军校学员</option>
+							
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td class="tdleft">婚否：</td>
+					<td>
+						<SELECT id=hfm name=hfm>
+							<option value="">--请选择--</option>
+							
+								<option value=a2852a48-0768-4328-aaa5-b1d6994299c5  >未婚</option>
+							
+								<option value=c80869f8-432e-4a69-8110-75d5f7cbd689 selected >已婚</option>
+							
+								<option value=4de5d5af-75ec-410d-adc0-87cf4c3c3471  >丧偶</option>
+							
+								<option value=5ac01104-aac4-412a-9f81-a4dd7833e1db  >离婚</option>
+							
+								<option value=778ba7d0-2fa8-4b98-a1f2-254055c0d90b  >其他</option>
+							
+						</SELECT>
+					</td>
+					<td class="tdleft">政治面貌：</td>
+					<td>
+						<select id=zzmmm name=zzmmm>
+							<option value="">--请选择--</option>
+							
+								<option value=cc0d65ed-e783-4886-8425-37794ed7b357 >中国共产党党员</option>
+							
+								<option value=ba4151db-81b8-4540-8e4b-2e7791dd5020 >中国共产党预备党员</option>
+							
+								<option value=6e960b9f-8495-400b-b79d-56d34a874a29 >中国共产主义青年团团员</option>
+							
+								<option value=acc7a10f-cdc6-414b-a26a-e0a6d0b449ed >中国国民党革命委员会会员</option>
+							
+								<option value=f665cf03-ab97-4450-aae9-62597b8e845e >中国民主同盟盟员</option>
+							
+								<option value=50dd3e4d-5934-4372-82ea-734b853ed80b >中国民主建国会会员</option>
+							
+								<option value=bcbc7ec6-7188-4c66-bf3a-c08acd72dae6 >中国民主促进会会员</option>
+							
+								<option value=ef524a99-d66e-47f9-8bbc-e33021daaecb >中国农工民主党党员</option>
+							
+								<option value=164d4084-440b-4ffe-9e85-f65193469a0d >中国致公党党员</option>
+							
+								<option value=3b4785be-16a2-4ce2-9cff-d8914a0311c1 >九三学社社员</option>
+							
+								<option value=dc7b9b81-71c6-45a1-8c2f-aba4346d05b1 >台湾民主自治同盟盟员</option>
+							
+								<option value=cdc83edf-5798-4e57-a7ca-adc036db972d >无党派民主人士</option>
+							
+								<option value=05b3837f-45e0-4ff8-8ff1-2f65ea926728 selected>群众</option>
+							
+						</select>
+					</td>
+				</tr>
+
+				<tr>
+					<td class="tdleft">出生地：</td>
+					<td>
+						<input type="text" name="csdmc" id="csdmc" value="湖南省|衡阳市|衡阳县" size="30" readonly="readonly" /><font color="red">*</font>
+						<label><a href="javascript:popUpWindow('drSelRegionlism.do?name=csdmc&Id=csdm',400,100,500,500);">选择出生地</a></label>
+						<input type="hidden" name="csdm" id="csdm" value="430421" />
+					</td>
+					<td class="tdleft">籍贯地：</td>
+					<td>
+						<input type="text" name="jgdmc" id="jgdmc" value="湖南省|衡阳市|衡阳县" size="30" readonly="readonly" /><font color="red">*</font> 
+						<label><a href="javascript:popUpWindow('drSelRegionlism.do?name=jgdmc&Id=jgdm',400,100,500,500);">选择籍贯地</a></label>
+						<input type="hidden" name="jgdm" id="jgdm" value="430421" />
+					</td>
+				</tr>
+				<tr>
+					<td class="tdleft">现学习或工作单位：</td>
+					<td>
+						<input type="text" name="xxgzdw" id="xxgzdw" size="30" value="无锡工艺职业技术学院" ><font color="red">*</font>
+					</td>
+					<td class="tdleft">现学习或工作单位性质：</td>
+					<td>
+						<select name="xxgzdwxz" id="xxgzdwxz">
+							<option value="">--请选择--</option>
+							
+								<option value=e45251a5-78cf-407e-a88c-c6b7a551cb72 >行政单位</option>
+							
+								<option value=64c880a0-ee30-46ff-a4b8-2f423dff92df >科研设计单位</option>
+							
+								<option value=b50d55fe-be13-4bb1-b099-e96d3f28959e selected>高等学校</option>
+							
+								<option value=9bff1b4c-9c57-49b0-b129-1b1747425d3f >其它教学单位</option>
+							
+								<option value=9d6e632a-ebe5-4b14-8661-612b9f2d5856 >医疗卫生单位</option>
+							
+								<option value=cca3c3fe-8e3d-4b9b-8866-4cf69af56866 >其它事业单位</option>
+							
+								<option value=76490ceb-838e-4bf8-af93-63936f581ae9 >国有企业</option>
+							
+								<option value=523ffcde-3fb7-44bd-b7c2-83e7a37bccf0 >三资企业</option>
+							
+								<option value=d12407e7-c26f-4a23-b075-cf0b0a69aff5 >民营企业</option>
+							
+								<option value=ea3ceee7-7599-4820-bc89-ecf66f65e8ab >其它企业</option>
+							
+								<option value=e70da9eb-aab1-44f1-a6f7-30960d97d5c8 >部队</option>
+							
+								<option value=2a22dcae-c468-43c2-a924-4a34bd2c446f >其它</option>
+							
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td class="tdleft">外语水平：</td>
+					<td>
+						<select name="wysp" id="wysp" style="width: 168px;">
+							<option value="无" >无</option>
+							<option value="CET四级" >CET四级</option>
+							<option value="CET六级" selected>CET六级</option>
+							<option value="其他" >其他</option>
+						</select>
+					</td>
+					<td class="tdleft">外语水平成绩：</td>
+					<td colspan="2">
+						<input type="text" name="wyspcj" id="wyspcj" size="8" value="">
+					</td>
+				</tr>
+				<tr>
+					<td class="tdleft">外语水平通过时间：</td>
+					<td>
+						<input type="text" name="wysptgsj" id="wysptgsj" value="1999-10" >(YYYY-MM)
+					</td>
+					<td class="tdleft">职称或职务：</td>
+					<td colspan="2">
+						<input type="text" name="zc" id="zc" size="8" value="">
+					</td>
+				</tr>
+				</table>
+				<div class=div_BottomBar>
+					<input type="hidden" name="type" id="type" value="">
+					<input type="hidden" id="schoolCode" name="schoolCode" value="10247">
+					<input type="hidden" id="pay" name="pay" value="false">
+					<input type="hidden" id="bmh" name="bmh" value="">
+					<input type="hidden" id="bmhi" name="bmhi" value="0">
+					<input type="hidden" id="remark" name="remark" value="">
+					<input type="hidden" id="isAuditing" name="isAuditing" value="0">
+					<input type="hidden" id="displayBmh" name="displayBmh" value="false">
+					<input type="hidden" name="subType" id="subType" value="save">
+					<input type="hidden" id="wsjf" name="wsjf" value="true">
+					
+					<!-- 变更记录用字段 变更前 -->
+					<input type="hidden" id="bef_xm" name="bef_xm" value="何英高">
+					<input type="hidden" id="bef_mz" name="bef_mz" value="汉族">
+					
+					<div align="center">
+						
+							<input type="button" value="下一步" name="save" id="save">
+						
+					</div>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

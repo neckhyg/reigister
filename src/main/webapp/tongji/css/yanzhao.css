@@ -1,0 +1,39 @@
+@charset "utf-8";
+/* CSS Document */
+body{ margin:0 auto; padding:0; color:#000; font-family:"ËÎÌו"; font-size:12px; background:#f2f2f2;}
+a,img,ul,li,dd,dt,dl,p,h1,h2,h3,h4,h5,h6,form{border:0 none; padding:0; margin:0; list-style:none; list-style-image:none; list-style-position:outside;}
+div{ margin:0 auto; padding:0;}
+.clear{ clear:both;}
+.blank8{ float:left; width:100%; height:8px; display:inline; overflow:hidden;}
+.blank10{ float:left; width:100%; height:10px; display:inline; overflow:hidden;}
+
+.area{ width:900px; height:auto; margin:0 auto; padding:0;}
+
+#ding{ float:left; width:100%; height:157px; background:url(../images/login_1.jpg) repeat-x;}
+
+#biaot{ float:left; margin-left:120px; display:inline; overflow:hidden; width:130px; height:29px; background:url(../images/login_2.jpg) no-repeat; margin-top:10px; margin-bottom:10px;}
+#biaot_t{ float:left; margin-left:0px; display:inline; overflow:hidden; width:580px; height:34px; margin-top:10px; margin-bottom:10px;}
+#bluebj{ float:left; width:100%; height:232px; background:url(../images/login_6.jpg) repeat-x;}
+#bluebj .shuzi{ float:left; width:100%; height:232px; background:url(../images/login_8.jpg) no-repeat top right;}
+#bluebj .login_left{ float:left; background:url(../images/login_7.jpg) no-repeat left top; height:232px; width:460px;}
+#bluebj .login_left_2{ float:left; background:url(../images/login_10.jpg) no-repeat 80px 30px; width:278px; height:210px; margin-right:40px;}
+#bluebj .login_right{ float:left; width:420px; height:213px; background:url(../images/login_5.jpg) no-repeat left 19px; padding-left:20px; padding-top:19px;}
+#bluebj .login_right .login_tit{ float:left; background:url(../images/login_3.jpg) no-repeat; margin-top:20px; margin-bottom:10px; width:420px; height:24px;}
+#bluebj .login_right .login_tit_2{ float:left; background:url(../images/login_12.jpg) no-repeat; margin-top:20px; margin-bottom:10px; width:420px; height:24px;}
+#bluebj .login_right .login_tit_3{ float:left; background:url(../images/login_13.jpg) no-repeat; margin-top:20px; margin-bottom:10px; width:420px; height:24px;}
+#bluebj .login_right .login_tit_4{ float:left; background:url(../images/login_14.jpg) no-repeat; margin-top:20px; margin-bottom:10px; width:420px; height:24px;}
+#bluebj .login_right .login_tit_5{ float:left; background:url(../images/login_15.jpg) no-repeat; margin-top:20px; margin-bottom:10px; width:420px; height:24px;}
+#bluebj .login_right .login_nr{ float:left; width:420px; height:auto;}
+#bluebj .login_right .login_nr table{ width:318px; height:auto;}
+#bluebj .login_right .login_nr table td{ height:30px; line-height:30px;}
+#bluebj .login_right .login_nr table td.tdleft{ text-align:right; padding-right:5px;}
+#bluebj .login_right .login_nr table td.tdright{ text-align:left;}
+#bluebj .login_right .login_nr table td.tdright input{ height:19px; width:180px; line-height:19px; font-size:12px; display:inline; overflow:hidden; border:1px #b5b5b5 solid;}
+#bluebj .login_right .login_nr table td.tdright input.yanzhe{ width:80px;}
+#bluebj .login_right .login_nr table td.tdright .yanz{ float:left; width:64px; padding-top:3px;}
+#bluebj .login_right .login_nr table td.tdright .yanz input{width:60px; height:19px;line-height:19px; font-size:12px; display:inline; overflow:hidden; border:1px #b5b5b5 solid;}
+#bluebj .login_right .login_nr table td.tdright span{ padding-left:5px; float:left; padding-top:5px;}
+#bluebj .login_right .login_nr table td.tdright a{ float:left; padding-left:5px; color:#0077a8; text-decoration:underline;}
+#bluebj .login_right .login_nr table td.denglu{ text-align:left; padding-top:5px;}
+#bluebj .login_right .login_nr table td.denglu input{ width:64px; height:26px; line-height:26px; text-align:center; border:0px; background:url(../images/login_4.jpg) no-repeat; cursor:pointer; color:#FFF;}
+#bluebj .login_right .login_nr table td.denglu a{ padding-left:10px; color:#0077a8; text-decoration:underline;}
