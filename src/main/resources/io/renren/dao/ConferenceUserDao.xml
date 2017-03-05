@@ -8,7 +8,12 @@
 	</select>
 
 	<select id="queryList" resultType="io.renren.entity.ConferenceUserEntity">
-		select * from conference_user 
+		select * from conference_user
+        <where>
+            <if test="name != null and name.trim() != ''">
+                and `user_id` like concat('%',#{name},'%')
+            </if>
+        </where>
 		<if test="offset != null and limit != null">
 			limit #{offset}, #{limit}
 		</if>

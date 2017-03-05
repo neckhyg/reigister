@@ -18,7 +18,9 @@ import io.renren.service.ConferenceUserService;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
 
-
+import io.renren.entity.SysUserEntity;
+import io.renren.service.SysUserService;
+import io.renren.utils.ShiroUtils;
 /**
  * 
  * 
@@ -31,7 +33,9 @@ import io.renren.utils.R;
 public class ConferenceUserController {
 	@Autowired
 	private ConferenceUserService conferenceUserService;
-	
+    @Autowired
+    private SysUserService sysUserService;
+
 	@RequestMapping("/conferenceuser.html")
 	public String list(){
 		return "conferenceuser/conferenceuser.html";
@@ -40,54 +44,50 @@ public class ConferenceUserController {
 	/**
 	 * 列表
 	 */
-	@ResponseBody
-	@RequestMapping("/list")
-	@RequiresPermissions("sys:conference:list")
-	public R list(Integer page, Integer limit){
-		Map<String, Object> map = new HashMap<>();
-		map.put("offset", (page - 1) * limit);
-		map.put("limit", limit);
-		
-		//查询列表数据
-		List<ConferenceUserEntity> conferenceUserList = conferenceUserService.queryList(map);
-		int total = conferenceUserService.queryTotal(map);
-
-//        Set<String> set = map.keySet();
-//        for (String s:set) {
-//            System.out.println(s+","+map.get(s));
-//        }
-		for(int i =0; i< total; i++){
-            ConferenceUserEntity user =   conferenceUserList.get(i);
-            String testtype = user.getTestType().trim();
-            System.out.println("testtype"+testtype);
-          //  if(testtype !=null)      {
-//                switch (testtype){
-//                    case "sk":
-//                        user.setTestType("数控技术");
-//                        break;
-//                    case "dz":
-//                        user.setTestType("电子信息");
-//                        break;
-//                    case "fz":
-//                        user.setTestType("服装工程");
-//                        break;
-//                    case "tc":
-//                        user.setTestType("陶瓷艺术");
-//                        break;
-//                    default:
-//                    //    user.setTestType("陶瓷艺术");
-//                        break;
+//	@ResponseBody
+//	@RequestMapping("/list")
+//	@RequiresPermissions("sys:conference:list")
+//	public R list(Integer page, Integer limit){
+//		Map<String, Object> map = new HashMap<>();
+//		map.put("offset", (page - 1) * limit);
+//		map.put("limit", limit);
 //
-//                }
-           // }
+//
+//		//查询列表数据
+//		List<ConferenceUserEntity> conferenceUserList = conferenceUserService.queryList(map);
+//		int total = conferenceUserService.queryTotal(map);
+//
+//
+//		PageUtils pageUtil = new PageUtils(conferenceUserList, total, limit, page);
+//
+//		return R.ok().put("page", pageUtil);
+//	}
+    @ResponseBody
+    @RequestMapping("/list")
+    @RequiresPermissions("sys:conference:list")
+    public R list(String name,Integer page, Integer limit){
+        Map<String, Object> map = new HashMap<>();
+        Long userId = ShiroUtils.getUserId();
+        SysUserEntity user = sysUserService.queryObject(userId);
+        name  = user.getUsername();
+        System.out.println("name : " +name);
+        map.put("name", name);
+        map.put("offset", (page - 1) * limit);
+        map.put("limit", limit);
 
-        }
-		PageUtils pageUtil = new PageUtils(conferenceUserList, total, limit, page);
-		
-		return R.ok().put("page", pageUtil);
-	}
-	
-	
+        //查询列表数据
+
+        List<ConferenceUserEntity> conferenceUserList = conferenceUserService.queryList(map);
+        int total = conferenceUserService.queryTotal(map);
+
+//        for(int i =0; i< total; i++){
+//            ConferenceUserEntity user =   conferenceUserList.get(i);
+//            String testtype = user.getTestType().trim();
+//        }
+        PageUtils pageUtil = new PageUtils(conferenceUserList, total, limit, page);
+
+        return R.ok().put("page", pageUtil);
+    }
 	/**
 	 * 信息
 	 */
