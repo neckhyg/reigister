@@ -21,6 +21,9 @@ import io.renren.utils.R;
 import io.renren.entity.SysUserEntity;
 import io.renren.service.SysUserService;
 import io.renren.utils.ShiroUtils;
+import simplemail.Mail;
+import simplemail.MailUtil;
+
 /**
  * 
  * 
@@ -108,7 +111,7 @@ public class ConferenceUserController {
 	@RequiresPermissions("sys:conference:save")
 	public R save(@RequestBody ConferenceUserEntity conferenceUser){
 		conferenceUserService.save(conferenceUser);
-		
+        sendMail(conferenceUser.getEmail());
 		return R.ok();
 	}
 	
@@ -135,5 +138,26 @@ public class ConferenceUserController {
 		
 		return R.ok();
 	}
-	
+
+    private boolean sendMail(String receiver){
+
+        Mail mail = new Mail();
+
+        mail.setHost("smtp.wxgyxy.cn");
+        mail.setSender("heyg@wxgyxy.cn");
+        mail.setUsername("heyg@wxgyxy.cn");
+        mail.setPassword("wxgy2013");
+
+        mail.setReceiver(receiver);
+
+        mail.setSubject("更新个人信息");
+        mail.setMessage("更新个人信息成功");
+        MailUtil util = new MailUtil();
+        if(util.send(mail)){
+
+            return true;
+        }else{
+            return false;
+        }
+    }
 }
