@@ -1,5 +1,7 @@
 package io.renren.dao;
 
+import java.lang.Object;
+import java.lang.String;
 import java.util.List;
 import java.util.Map;
 
